@@ -1,0 +1,8 @@
+(fp_lib_table
+  (lib (name abracon-ml)(type KiCad)(uri /Users/mike/Documents/KiCAD/footprints/abracon-ml.pretty)(options "")(descr ""))
+  (lib (name atmel-ml)(type KiCad)(uri /Users/mike/Documents/KiCAD/footprints/atmel-ml.pretty)(options "")(descr ""))
+  (lib (name Diodes_SMD-ML)(type KiCad)(uri /Users/mike/Documents/KiCAD/footprints/Diodes_SMD-ML.pretty)(options "")(descr ""))
+  (lib (name holes-ml)(type KiCad)(uri /Users/mike/Documents/KiCAD/footprints/holes-ml.pretty)(options "")(descr ""))
+  (lib (name ti-ml)(type KiCad)(uri /Users/mike/Documents/KiCAD/footprints/ti-ml.pretty)(options "")(descr ""))
+  (lib (name infineon-ml)(type KiCad)(uri /Users/mike/Documents/KiCAD/footprints/infineon-ml.pretty)(options "")(descr ""))
+)

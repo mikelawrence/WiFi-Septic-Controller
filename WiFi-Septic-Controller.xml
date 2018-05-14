@@ -1,0 +1,2620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>/Users/mike/Documents/KiCAD/WiFi-Septic-Controller/WiFi-Septic-Controller.sch</source>
+    <date>Sunday, May 13, 2018 at 04:10:39 PM</date>
+    <tool>Eeschema (5.0.0-rc2-dev-640-gbf135b0)</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>WiFi Septic Controller</title>
+        <company>Mike Lawrence</company>
+        <rev>1.0</rev>
+        <date>May 2018</date>
+        <source>WiFi-Septic-Controller.sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="SW1">
+      <value>Reset</value>
+      <footprint>Buttons_Switches_SMD:SW_SPST_B3U-1000P</footprint>
+      <datasheet>http://www.mouser.com/ds/2/307/en-b3u-3615.pdf</datasheet>
+      <fields>
+        <field name="Part Number">B3U-1000P</field>
+        <field name="Manufacturer">Omron</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">653-B3U-1000P</field>
+      </fields>
+      <libsource lib="Switch" part="SW_Push"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B01DF93</tstamp>
+    </comp>
+    <comp ref="R22">
+      <value>4.7k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Part Number">ERJ-3EKF4701V</field>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF4701V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B01DF94</tstamp>
+    </comp>
+    <comp ref="Y1">
+      <value>32.768kHz</value>
+      <footprint>abracon-ml:ABS07</footprint>
+      <fields>
+        <field name="Manufacturer">Abracon</field>
+        <field name="Part Number">ABS07-32.768KHZ-9-T</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">815-ABS07-32.768K9T</field>
+      </fields>
+      <libsource lib="device" part="Crystal"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA33</tstamp>
+    </comp>
+    <comp ref="C20">
+      <value>15pF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Part Number">06035A150JAT2A</field>
+        <field name="Manufacturer">AVX</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">581-06035A150J</field>
+        <field name="Voltage">50V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA31</tstamp>
+    </comp>
+    <comp ref="C19">
+      <value>15pF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Part Number">06035A150JAT2A</field>
+        <field name="Manufacturer">AVX</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">581-06035A150J</field>
+        <field name="Voltage">50V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA32</tstamp>
+    </comp>
+    <comp ref="J5">
+      <value>USB_B_Micro</value>
+      <footprint>Connectors_USB:USB_Micro-B_Wuerth-614105150721_Vertical_CircularHoles</footprint>
+      <fields>
+        <field name="Manufacturer">Wurth Electronics</field>
+        <field name="Part Number">614105150721</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">710-614105150621</field>
+      </fields>
+      <libsource lib="Connector" part="USB_B_Micro"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B20DF8A</tstamp>
+    </comp>
+    <comp ref="J7">
+      <value>Cortex Debug</value>
+      <footprint>Pin_Headers:Pin_Header_Straight_2x05_Pitch1.27mm_SMD</footprint>
+      <fields>
+        <field name="Manufacturer">Amphenol FCI</field>
+        <field name="Part Number">202112100010C4LF</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">649-202112100010C4LF</field>
+      </fields>
+      <libsource lib="Connector" part="Conn_02x05_Odd_Even"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B20DF89</tstamp>
+    </comp>
+    <comp ref="R23">
+      <value>39</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF39R0V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF39R0V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AC98C48</tstamp>
+    </comp>
+    <comp ref="R25">
+      <value>330</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF3300V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF3300V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B20DF8C</tstamp>
+    </comp>
+    <comp ref="R24">
+      <value>10k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1002V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1002V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B20DF8D</tstamp>
+    </comp>
+    <comp ref="L3">
+      <value>470@1MHz</value>
+      <footprint>Inductors_SMD:L_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Murata</field>
+        <field name="Part Number">BLM18PG471SN1D</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">81-BLM18PG471SN1D</field>
+      </fields>
+      <libsource lib="device" part="Ferrite_Bead"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA3E</tstamp>
+    </comp>
+    <comp ref="C16">
+      <value>1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">TDK</field>
+        <field name="Part Number">CGB3B1X7R1A105M055AC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">810-CGB3B1X7R1A105MC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA55</tstamp>
+    </comp>
+    <comp ref="U8">
+      <value>SAMD21G18-M</value>
+      <footprint>Housings_DFN_QFN:QFN-48-1EP_7x7mm_Pitch0.5mm</footprint>
+      <datasheet>http://www.microchip.com/downloads/en/DeviceDoc/40001882A.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">Atmel</field>
+        <field name="Part Number">ATSAMD21G18A-MUT</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">556-ATSAMD21G18A-MUT</field>
+      </fields>
+      <libsource lib="atmel-ml" part="SAMD21G18-M"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B20DF9B</tstamp>
+    </comp>
+    <comp ref="D8">
+      <value>Green</value>
+      <footprint>LEDs:LED_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Lumex</field>
+        <field name="Part Number">696-SMLLX0603SGWTR</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">696-SML-LX0603SGW</field>
+      </fields>
+      <libsource lib="device" part="LED_ALT"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AD00DE4</tstamp>
+    </comp>
+    <comp ref="D7">
+      <value>Yellow</value>
+      <footprint>LEDs:LED_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Lumex</field>
+        <field name="Part Number">SML-LX0603SYW-TR</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">696-SML-LX0603SYW</field>
+      </fields>
+      <libsource lib="device" part="LED_ALT"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA40</tstamp>
+    </comp>
+    <comp ref="U6">
+      <value>ATWINC1500-MR210UB</value>
+      <footprint>atmel-ml:ATWINC1500-MR210XB</footprint>
+      <datasheet>ATWINC1500-MR210UB</datasheet>
+      <fields>
+        <field name="Manufacturer">Atmel</field>
+        <field name="Part Number">ATWINC1500-MR210UB1140</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">579-C1500MR210UB1140</field>
+      </fields>
+      <libsource lib="atmel-ml" part="ATWINC1500-MR210UB"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BAA7B14</tstamp>
+    </comp>
+    <comp ref="R21">
+      <value>130</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1300V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1300V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ADDD089</tstamp>
+    </comp>
+    <comp ref="C22">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y104JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BAA7B13</tstamp>
+    </comp>
+    <comp ref="C14">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y104JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ADAFE23</tstamp>
+    </comp>
+    <comp ref="C13">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y104JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ADAFEA1</tstamp>
+    </comp>
+    <comp ref="C12">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y104JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5ADBF9BB</tstamp>
+    </comp>
+    <comp ref="C11">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y104JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AD71DFD</tstamp>
+    </comp>
+    <comp ref="C15">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y104JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA52</tstamp>
+    </comp>
+    <comp ref="C21">
+      <value>0.1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y104JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">963-TMK212BBJ226MGTT</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA9B</tstamp>
+    </comp>
+    <comp ref="D6">
+      <value>PRTR5V0U2X</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-143</footprint>
+      <fields>
+        <field name="Manufacturer">Nexperia</field>
+        <field name="Part Number">PRTR5V0U2X,215</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">771-PRTR5V0U2X-T/R</field>
+      </fields>
+      <libsource lib="ESD_Protection" part="PRTR5V0U2X"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BB62D79</tstamp>
+    </comp>
+    <comp ref="C17">
+      <value>22uF</value>
+      <footprint>Capacitors_SMD:C_0805</footprint>
+      <fields>
+        <field name="Manufacturer">Taiyo Yuden</field>
+        <field name="Part Number">TMK212BBJ226MG-TT</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">963-TMK212BBJ226MGTT</field>
+        <field name="Voltage">25V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEECA47</tstamp>
+    </comp>
+    <comp ref="C18">
+      <value>1uF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">TDK</field>
+        <field name="Part Number">CGB3B1X7R1A105M055AC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">810-CGB3B1X7R1A105MC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B20DF9C</tstamp>
+    </comp>
+    <comp ref="Q2">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AF43027</tstamp>
+    </comp>
+    <comp ref="U1">
+      <value>LMZ21700</value>
+      <footprint>ti-ml:SIL0008E</footprint>
+      <fields>
+        <field name="Manufacturer">TI</field>
+        <field name="Part Number">LMZ21700SILR</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-LMZ21700SILR</field>
+      </fields>
+      <libsource lib="ti-ml" part="LMZ21700"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114680</tstamp>
+    </comp>
+    <comp ref="C3">
+      <value>22uF</value>
+      <footprint>Capacitors_SMD:C_0805</footprint>
+      <fields>
+        <field name="Part Number">TMK212BBJ226MG-TT</field>
+        <field name="Manufacturer">Taiyo Yuden</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">963-TMK212BBJ226MGTT</field>
+        <field name="Voltage">25V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B11468D</tstamp>
+    </comp>
+    <comp ref="C5">
+      <value>22uF</value>
+      <footprint>Capacitors_SMD:C_0805</footprint>
+      <fields>
+        <field name="Manufacturer">Taiyo Yuden</field>
+        <field name="Part Number">TMK212BBJ226MG-TT</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">810-C2012X5R1A226M-3</field>
+        <field name="Voltage">25V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B11469A</tstamp>
+    </comp>
+    <comp ref="C4">
+      <value>3.3nF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y332JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y332JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B1146A7</tstamp>
+    </comp>
+    <comp ref="R2">
+      <value>383k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF3833V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF3833V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B1146B3</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>1.21M</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Yageo</field>
+        <field name="Part Number">RC0603FR-071M21L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">603-RC0603FR-071M21L</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B1146BF</tstamp>
+    </comp>
+    <comp ref="C1">
+      <value>330uF</value>
+      <footprint>Capacitors_SMD:CP_Elec_10x10.5</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">EEE-FT1H331GP</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-EEE-FT1H331GP</field>
+        <field name="Voltage">50V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="CP_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114727</tstamp>
+    </comp>
+    <comp ref="D2">
+      <value>D_Bridge_+-AA</value>
+      <footprint>Diodes_SMD:Diode_Bridge_DFS</footprint>
+      <datasheet>https://www.mouser.com/ds/2/80/DF2005S-G%20Thru340567.%20DF210S-G%20RevF-535444.pdf</datasheet>
+      <fields>
+        <field name="Part Number">DF206ST-G</field>
+        <field name="Manufacturer">Comchip Tech</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">750-DF206ST-G</field>
+      </fields>
+      <libsource lib="device" part="D_Bridge_+-AA"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114732</tstamp>
+    </comp>
+    <comp ref="T1">
+      <value>VPP-XFMR</value>
+      <footprint>triad-ml:VPP</footprint>
+      <fields>
+        <field name="Manufacturer">Triad Magnetics</field>
+        <field name="Part Number">VPP20-250</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">553-VPP20-250</field>
+      </fields>
+      <libsource lib="triad-ml" part="VPP-XFMR"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B11473F</tstamp>
+    </comp>
+    <comp ref="U2">
+      <value>LMZ21700</value>
+      <footprint>ti-ml:SIL0008E</footprint>
+      <fields>
+        <field name="Manufacturer">TI</field>
+        <field name="Part Number">LMZ21700SILR</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-LMZ21700SILR</field>
+      </fields>
+      <libsource lib="ti-ml" part="LMZ21700"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114751</tstamp>
+    </comp>
+    <comp ref="C8">
+      <value>22uF</value>
+      <footprint>Capacitors_SMD:C_0805</footprint>
+      <fields>
+        <field name="Part Number">TMK212BBJ226MG-TT</field>
+        <field name="Manufacturer">Taiyo Yuden</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">963-TMK212BBJ226MGTT</field>
+        <field name="Voltage">25V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B11475E</tstamp>
+    </comp>
+    <comp ref="C10">
+      <value>22uF</value>
+      <footprint>Capacitors_SMD:C_0805</footprint>
+      <fields>
+        <field name="Manufacturer">Taiyo Yuden</field>
+        <field name="Part Number">TMK212BBJ226MG-TT</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">810-C2012X5R1A226M-3</field>
+        <field name="Voltage">25V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B11476B</tstamp>
+    </comp>
+    <comp ref="C9">
+      <value>3.3nF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y332JXQPW1BC</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y332JXQPBC</field>
+        <field name="Voltage">10V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114778</tstamp>
+    </comp>
+    <comp ref="R8">
+      <value>44.2k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF4422V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF4422V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114784</tstamp>
+    </comp>
+    <comp ref="R7">
+      <value>232k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Yageo</field>
+        <field name="Part Number">RC0603FR-07232KL</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">603-RC0603FR-07232KL</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B114790</tstamp>
+    </comp>
+    <comp ref="C2">
+      <value>330uF</value>
+      <footprint>Capacitors_SMD:CP_Elec_10x10.5</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">EEE-FT1H331GP</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-EEE-FT1H331GP</field>
+        <field name="Voltage">50V</field>
+        <field name="Tolerance">20%</field>
+      </fields>
+      <libsource lib="device" part="CP_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B1147D6</tstamp>
+    </comp>
+    <comp ref="U3">
+      <value>MID400</value>
+      <footprint>Housings_DIP:SMDIP-8_W9.53mm</footprint>
+      <fields>
+        <field name="Manufacturer">On Semi</field>
+        <field name="Part Number">MID400S</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-MID400S</field>
+      </fields>
+      <libsource lib="onsemi-ml" part="MID400"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEE8DC8</tstamp>
+    </comp>
+    <comp ref="U4">
+      <value>MID400</value>
+      <footprint>Housings_DIP:SMDIP-8_W9.53mm</footprint>
+      <libsource lib="onsemi-ml" part="MID400"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AEE9D98</tstamp>
+    </comp>
+    <comp ref="J4">
+      <value>Screw_Terminal_01x06</value>
+      <footprint>TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-3.5mm_6pol</footprint>
+      <fields>
+        <field name="Manufacturer">Phoenix Contact</field>
+        <field name="Part Number">1984659</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">651-1984659</field>
+      </fields>
+      <libsource lib="Connector" part="Screw_Terminal_01x06"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AFA6957</tstamp>
+    </comp>
+    <comp ref="C6">
+      <value>1nF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y102KXAAC31</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y102KXAAC31</field>
+        <field name="Voltage">50V</field>
+        <field name="Tolerance">10%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B18BCCD</tstamp>
+    </comp>
+    <comp ref="C7">
+      <value>1nF</value>
+      <footprint>Capacitors_SMD:C_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Vishay</field>
+        <field name="Part Number">VJ0603Y102KXAAC31</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">77-VJ0603Y102KXAAC31</field>
+        <field name="Voltage">50V</field>
+        <field name="Tolerance">10%</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B18BCDA</tstamp>
+    </comp>
+    <comp ref="L1">
+      <value>1k@1MHz</value>
+      <footprint>Inductors_SMD:L_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Murata</field>
+        <field name="Part Number">BLM31KN102SH1L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">81-BLM31KN102SH1L</field>
+      </fields>
+      <libsource lib="device" part="Ferrite_Bead"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B18BCEC</tstamp>
+    </comp>
+    <comp ref="D1">
+      <value>DFLS130</value>
+      <footprint>Diodes_SMD:D_PowerDI-123</footprint>
+      <fields>
+        <field name="Manufacturer">Diodes Inc</field>
+        <field name="Part Number">DFLS130LQ</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">621-DFLS130L</field>
+      </fields>
+      <libsource lib="device" part="D_Schottky_ALT"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B228049</tstamp>
+    </comp>
+    <comp ref="Q3">
+      <value>DMG2305UX</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.diodes.com/assets/Datasheets/DMG2305UX.pdf</datasheet>
+      <fields>
+        <field name="Part Number">DMG2305UX-7</field>
+        <field name="Manufacturer">Diodes Inc</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">621-DMG2305UX-7</field>
+      </fields>
+      <libsource lib="diodes-inc-ml" part="DMG2305UX"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B41994E</tstamp>
+    </comp>
+    <comp ref="Q4">
+      <value>BCM857BS</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-363_SC-70-6</footprint>
+      <datasheet>https://www.diodes.com/assets/Datasheets/BCM857BS.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">Diodes Inc</field>
+        <field name="Part Number">BCM857BS-7-F</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">621-BCM857BS-7-F</field>
+      </fields>
+      <libsource lib="diodes-inc-ml" part="BCM857BS"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B419959</tstamp>
+    </comp>
+    <comp ref="R9">
+      <value>10k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Part Number">ERJ-3EKF1002V</field>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1002V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B419970</tstamp>
+    </comp>
+    <comp ref="R10">
+      <value>47k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Part Number">ERJ-3EKF4702V</field>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF4702V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B41997C</tstamp>
+    </comp>
+    <comp ref="J3">
+      <value>Screw_Terminal_01x03</value>
+      <footprint>TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-3.5mm_3pol</footprint>
+      <fields>
+        <field name="Manufacturer">Phoenix Contact</field>
+        <field name="Part Number">1984620</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">651-1984620</field>
+      </fields>
+      <libsource lib="Connector" part="Screw_Terminal_01x03"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B6EE8BF</tstamp>
+    </comp>
+    <comp ref="R19">
+      <value>130</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1300V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1300V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B72C5B9</tstamp>
+    </comp>
+    <comp ref="R12">
+      <value>22k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J223V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J223V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BAA839E</tstamp>
+    </comp>
+    <comp ref="R6">
+      <value>22k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J223V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J223V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BB016B7</tstamp>
+    </comp>
+    <comp ref="R11">
+      <value>10k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1002V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1002V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BDA334D</tstamp>
+    </comp>
+    <comp ref="U5">
+      <value>74LVC2G14</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23-6</footprint>
+      <fields>
+        <field name="Manufacturer">Texas Instruments</field>
+        <field name="Part Number">SN74LVC2G14DBVG4</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-SN74LVC2G14DBVG4</field>
+      </fields>
+      <libsource lib="Logic_74xgxx" part="74LVC2G14"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB8920</tstamp>
+    </comp>
+    <comp ref="R14">
+      <value>100k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J104V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J104V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB893D</tstamp>
+    </comp>
+    <comp ref="R15">
+      <value>100k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J104V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J104V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB8949</tstamp>
+    </comp>
+    <comp ref="D3">
+      <value>TPD2E2U06</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>http://www.ti.com/lit/gpn/tpd2e2u06-q1</datasheet>
+      <fields>
+        <field name="Manufacturer">Texas Instruments</field>
+        <field name="Part Number">TPD2E2U06QDBZRQ1</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-TPD2E2U06QDBZRQ1</field>
+      </fields>
+      <libsource lib="ti-ml" part="TPD2E2U06-Q1"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB8959</tstamp>
+    </comp>
+    <comp ref="R13">
+      <value>100k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J104V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J104V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB896B</tstamp>
+    </comp>
+    <comp ref="R16">
+      <value>100k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J104V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J104V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB8979</tstamp>
+    </comp>
+    <comp ref="L2">
+      <value>1k@1MHz</value>
+      <footprint>Inductors_SMD:L_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Murata</field>
+        <field name="Part Number">BLM31KN102SH1L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">81-BLM31KN102SH1L</field>
+      </fields>
+      <libsource lib="device" part="Ferrite_Bead"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BFB8993</tstamp>
+    </comp>
+    <comp ref="U7">
+      <value>74LVC2G14</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23-6</footprint>
+      <fields>
+        <field name="Manufacturer">Texas Instruments</field>
+        <field name="Part Number">SN74LVC2G14DBVG4</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-SN74LVC2G14DBVG4</field>
+      </fields>
+      <libsource lib="Logic_74xgxx" part="74LVC2G14"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5C02B7D7</tstamp>
+    </comp>
+    <comp ref="R18">
+      <value>100k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J104V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J104V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5C02B7E5</tstamp>
+    </comp>
+    <comp ref="D5">
+      <value>TPD2E2U06</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>http://www.ti.com/lit/gpn/tpd2e2u06-q1</datasheet>
+      <fields>
+        <field name="Manufacturer">Texas Instruments</field>
+        <field name="Part Number">TPD2E2U06QDBZRQ1</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-TPD2E2U06QDBZRQ1</field>
+      </fields>
+      <libsource lib="ti-ml" part="TPD2E2U06-Q1"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5C02B7F2</tstamp>
+    </comp>
+    <comp ref="R17">
+      <value>100k</value>
+      <footprint>Resistors_SMD:R_1206</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-P08J104V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-P08J104V</field>
+        <field name="Tolerance">5%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5C02B7FE</tstamp>
+    </comp>
+    <comp ref="D4">
+      <value>TPD2E2U06</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>http://www.ti.com/lit/gpn/tpd2e2u06-q1</datasheet>
+      <fields>
+        <field name="Manufacturer">Texas Instruments</field>
+        <field name="Part Number">TPD2E2U06QDBZRQ1</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">595-TPD2E2U06QDBZRQ1</field>
+      </fields>
+      <libsource lib="ti-ml" part="TPD2E2U06-Q1"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5C6C2C57</tstamp>
+    </comp>
+    <comp ref="D9">
+      <value>Red</value>
+      <footprint>LEDs:LED_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Lumex</field>
+        <field name="Part Number">SML-LX0603SRW-TR</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">696-SML-LX0603SRW</field>
+      </fields>
+      <libsource lib="device" part="LED_ALT"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5D0F77CF</tstamp>
+    </comp>
+    <comp ref="R20">
+      <value>130</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1300V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1300V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5D2757DA</tstamp>
+    </comp>
+    <comp ref="J8">
+      <value>Screw_Terminal_01x03</value>
+      <footprint>TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-3.5mm_3pol</footprint>
+      <fields>
+        <field name="Manufacturer">Phoenix Contact</field>
+        <field name="Part Number">1984620</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">651-1984620</field>
+      </fields>
+      <libsource lib="Connector" part="Screw_Terminal_01x03"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5D275B1A</tstamp>
+    </comp>
+    <comp ref="RL1">
+      <value>CPC1511Y</value>
+      <footprint>ixys-ml:SIP-4</footprint>
+      <fields>
+        <field name="Manufacturer">IXYS</field>
+        <field name="Part Number">CPC1511Y</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">849-CPC1511</field>
+      </fields>
+      <libsource lib="ixys-ml" part="CPC1511Y"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5DD0EA0A</tstamp>
+    </comp>
+    <comp ref="RL2">
+      <value>CPC1511Y</value>
+      <footprint>ixys-ml:SIP-4</footprint>
+      <fields>
+        <field name="Manufacturer">IXYS</field>
+        <field name="Part Number">CPC1511Y</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">849-CPC1511</field>
+      </fields>
+      <libsource lib="ixys-ml" part="CPC1511Y"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5DD0ECC9</tstamp>
+    </comp>
+    <comp ref="Q1">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5DF04EC4</tstamp>
+    </comp>
+    <comp ref="J1">
+      <value>Screw_Terminal_01x02</value>
+      <footprint>TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-3.5mm_2pol</footprint>
+      <fields>
+        <field name="Manufacturer">Phoenix Contact</field>
+        <field name="Part Number">1984617</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">651-1984617</field>
+      </fields>
+      <libsource lib="Connector" part="Screw_Terminal_01x02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E139CF7</tstamp>
+    </comp>
+    <comp ref="R5">
+      <value>10k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1002V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1002V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E284A1B</tstamp>
+    </comp>
+    <comp ref="R3">
+      <value>10k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1002V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1002V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E284BDA</tstamp>
+    </comp>
+    <comp ref="RV1">
+      <value>10k</value>
+      <footprint>Potentiometers:Potentiometer_Trimmer_Bourns_3339P_Horizontal</footprint>
+      <fields>
+        <field name="Manufacturer">Bourns</field>
+        <field name="Part Number">3339P-1-103LF</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">652-3339P-1-103LF</field>
+      </fields>
+      <libsource lib="device" part="POT"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E5C0B06</tstamp>
+    </comp>
+    <comp ref="Q6">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E8BF465</tstamp>
+    </comp>
+    <comp ref="Q7">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E8F3AA0</tstamp>
+    </comp>
+    <comp ref="Q5">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5E8F45D5</tstamp>
+    </comp>
+    <comp ref="J6">
+      <value>GWT-C1627A-RGB</value>
+      <footprint>adafruit-ml:GWT-C1627A-RGB</footprint>
+      <libsource lib="adafruit-ml" part="GWT-C1627A-RGB"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F06CDA4</tstamp>
+    </comp>
+    <comp ref="SW2">
+      <value>Pump</value>
+      <footprint>Buttons_Switches_SMD:SW_SPST_PTS645</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">PTS645SK70SMTR92LFS</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">611-PTS645SM13SMTR92</field>
+      </fields>
+      <libsource lib="Switch" part="SW_Push"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F6A4A71</tstamp>
+    </comp>
+    <comp ref="R26">
+      <value>10k</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1002V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1002V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5F6E08BB</tstamp>
+    </comp>
+    <comp ref="MK1">
+      <value>Mounting_Hole_PAD</value>
+      <footprint>holes-ml:6-32_PTH_Mounting_Hole</footprint>
+      <libsource lib="Mechanical" part="Mounting_Hole_PAD"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B01E798</tstamp>
+    </comp>
+    <comp ref="R4">
+      <value>169</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF1690V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF1690V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B563E70</tstamp>
+    </comp>
+    <comp ref="D10">
+      <value>Blue</value>
+      <footprint>LEDs:LED_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Lumex</field>
+        <field name="Part Number">SML-LX0603USBW-TR</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">696-SML-0603USBWTR</field>
+      </fields>
+      <libsource lib="device" part="LED_ALT"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B563E7B</tstamp>
+    </comp>
+    <comp ref="R28">
+      <value>698</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF6980V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF6980V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BC73604</tstamp>
+    </comp>
+    <comp ref="R29">
+      <value>698</value>
+      <footprint>Resistors_SMD:R_0603</footprint>
+      <fields>
+        <field name="Manufacturer">Panasonic</field>
+        <field name="Part Number">ERJ-3EKF6980V</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">667-ERJ-3EKF6980V</field>
+        <field name="Tolerance">1%</field>
+      </fields>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5BC73919</tstamp>
+    </comp>
+    <comp ref="Q9">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B16FCA6</tstamp>
+    </comp>
+    <comp ref="Q8">
+      <value>2N7002</value>
+      <footprint>TO_SOT_Packages_SMD:SOT-23</footprint>
+      <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">On Semiconductor</field>
+        <field name="Part Number">2N7002L</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">512-2N7002L</field>
+      </fields>
+      <libsource lib="Transistor" part="2N7002"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B170CB5</tstamp>
+    </comp>
+    <comp ref="J2">
+      <value>Screw_Terminal_01x02</value>
+      <footprint>TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-3.5mm_2pol</footprint>
+      <fields>
+        <field name="Manufacturer">Phoenix Contact</field>
+        <field name="Part Number">1984617</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">651-1984617</field>
+      </fields>
+      <libsource lib="Connector" part="Screw_Terminal_01x02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B01BC0A</tstamp>
+    </comp>
+    <comp ref="TP1">
+      <value>3.3V</value>
+      <footprint>Connectors_TestPoints:Test_Point_Pad_1.0x1.0mm</footprint>
+      <libsource lib="Connector" part="Test_Point_Flag"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AFC0FAE</tstamp>
+    </comp>
+    <comp ref="TP2">
+      <value>5V</value>
+      <footprint>Connectors_TestPoints:Test_Point_Pad_1.0x1.0mm</footprint>
+      <libsource lib="Connector" part="Test_Point_Flag"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5AFFD646</tstamp>
+    </comp>
+    <comp ref="TP3">
+      <value>GND</value>
+      <footprint>Connectors_TestPoints:Test_Point_Keystone_5010-5014_Multipurpose</footprint>
+      <fields>
+        <field name="Manufacturer">Keystone</field>
+        <field name="Part Number">5126</field>
+        <field name="Vendor">Mouser</field>
+        <field name="Vendor Part Number">534-5126</field>
+      </fields>
+      <libsource lib="Connector" part="Test_Point_Flag"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5B03A741</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Connector" part="Conn_02x05_Odd_Even">
+      <description>Generic connector, double row, 02x05, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*2x??x*mm*</fp>
+        <fp>Connector*:*2x???Pitch*</fp>
+        <fp>Pin_Header_Straight_2X*</fp>
+        <fp>Pin_Header_Angled_2X*</fp>
+        <fp>Socket_Strip_Straight_2X*</fp>
+        <fp>Socket_Strip_Angled_2X*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_02x05_Odd_Even</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+        <pin num="7" name="Pin_7" type="passive"/>
+        <pin num="8" name="Pin_8" type="passive"/>
+        <pin num="9" name="Pin_9" type="passive"/>
+        <pin num="10" name="Pin_10" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="Screw_Terminal_01x02">
+      <description>Generic screw terminal, single row, 01x02</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*Terminal*Block*:*</fp>
+        <fp>TerminalBlock*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Screw_Terminal_01x02</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="Screw_Terminal_01x03">
+      <description>Generic screw terminal, single row, 01x03</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*Terminal*Block*:*</fp>
+        <fp>TerminalBlock*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Screw_Terminal_01x03</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="Screw_Terminal_01x06">
+      <description>Generic screw terminal, single row, 01x06</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*Terminal*Block*:*</fp>
+        <fp>TerminalBlock*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Screw_Terminal_01x06</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="Test_Point_Flag">
+      <description>test point (alternative flag-style design)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Pin*</fp>
+        <fp>Test*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">TP</field>
+        <field name="Value">Test_Point_Flag</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector" part="USB_B_Micro">
+      <aliases>
+        <alias>USB_B_Mini</alias>
+      </aliases>
+      <description>USB Micro Type B connector</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>USB*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">USB_B_Micro</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VBUS" type="power_out"/>
+        <pin num="2" name="D-" type="passive"/>
+        <pin num="3" name="D+" type="passive"/>
+        <pin num="4" name="ID" type="passive"/>
+        <pin num="5" name="GND" type="power_out"/>
+        <pin num="6" name="Shield" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ESD_Protection" part="PRTR5V0U2X">
+      <description>Ultra low capacitance double rail-to-rail ESD protection diode, SOT-363</description>
+      <docs>https://assets.nexperia.com/documents/data-sheet/PRTR5V0U2X.pdf</docs>
+      <footprints>
+        <fp>SOT143B*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">PRTR5V0U2X</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="power_in"/>
+        <pin num="2" name="IO1" type="passive"/>
+        <pin num="3" name="IO2" type="passive"/>
+        <pin num="4" name="VCC" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="Logic_74xgxx" part="74LVC2G14">
+      <description>Dual NOT Gate Schmidt Triggered, Low-Voltage CMOS</description>
+      <docs>http://www.ti.com/lit/sg/scyt129e/scyt129e.pdf</docs>
+      <footprints>
+        <fp>SG-*</fp>
+        <fp>SOT*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">74LVC2G14</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="input"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="~" type="input"/>
+        <pin num="4" name="~" type="output"/>
+        <pin num="5" name="VCC" type="power_in"/>
+        <pin num="6" name="~" type="output"/>
+      </pins>
+    </libpart>
+    <libpart lib="Mechanical" part="Mounting_Hole_PAD">
+      <description>Mounting Hole with connection</description>
+      <footprints>
+        <fp>Mounting?Hole*</fp>
+        <fp>Hole*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">MK</field>
+        <field name="Value">Mounting_Hole_PAD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="Switch" part="SW_Push">
+      <description>Push button switch, generic, two pins</description>
+      <fields>
+        <field name="Reference">SW</field>
+        <field name="Value">SW_Push</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Transistor" part="BSS138">
+      <aliases>
+        <alias>2N7002</alias>
+        <alias>MMBF170</alias>
+      </aliases>
+      <description>50V Vds, 0.22 A Id, N-channel MOSFET, SOT-23</description>
+      <docs>https://www.fairchildsemi.com/datasheets/BS/BSS138.pdf</docs>
+      <footprints>
+        <fp>SOT?23*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">BSS138</field>
+        <field name="Footprint">TO_SOT_Packages_SMD:SOT-23</field>
+      </fields>
+      <pins>
+        <pin num="1" name="G" type="input"/>
+        <pin num="2" name="S" type="passive"/>
+        <pin num="3" name="D" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="adafruit-ml" part="GWT-C1627A-RGB">
+      <description>LCD 16x2, 8 bit parallel bus, 5V VDD, RGB Backlight</description>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">GWT-C1627A-RGB</field>
+        <field name="Footprint">adafruit-ml:GWT-C1627A-RGB</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VSS" type="power_in"/>
+        <pin num="2" name="VDD" type="power_in"/>
+        <pin num="3" name="VO" type="input"/>
+        <pin num="4" name="RS" type="input"/>
+        <pin num="5" name="R/~W" type="input"/>
+        <pin num="6" name="E" type="input"/>
+        <pin num="7" name="DB0" type="BiDi"/>
+        <pin num="8" name="DB1" type="BiDi"/>
+        <pin num="9" name="DB2" type="BiDi"/>
+        <pin num="10" name="DB3" type="BiDi"/>
+        <pin num="11" name="DB4" type="BiDi"/>
+        <pin num="12" name="DB5" type="BiDi"/>
+        <pin num="13" name="DB6" type="BiDi"/>
+        <pin num="14" name="DB7" type="BiDi"/>
+        <pin num="15" name="A" type="power_in"/>
+        <pin num="16" name="K-RED" type="power_in"/>
+        <pin num="17" name="K-GRN" type="power_in"/>
+        <pin num="18" name="K-BLU" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="atmel-ml" part="ATWINC1500-MR210UB">
+      <aliases>
+        <alias>ATWINC1500-MR210PB</alias>
+      </aliases>
+      <description>802.11 b/g/n SmartConnect IoT Module u.FL Antenna Connector</description>
+      <footprints>
+        <fp>ATWINC1500-MR210XB*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">ATWINC1500-MR210UB</field>
+        <field name="Footprint">MICROCHIP_ATWINC1500-MR210UB</field>
+        <field name="Datasheet">ATWINC1500-MR210UB</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GPIO_6" type="BiDi"/>
+        <pin num="2" name="I2C_SCL" type="BiDi"/>
+        <pin num="3" name="I2C_SDA" type="BiDi"/>
+        <pin num="4" name="~RESET~" type="input"/>
+        <pin num="9" name="GND_1" type="power_in"/>
+        <pin num="10" name="SPI_CFG" type="input"/>
+        <pin num="11" name="WAKE" type="input"/>
+        <pin num="12" name="GND_2" type="power_in"/>
+        <pin num="13" name="~IRQ~" type="output"/>
+        <pin num="14" name="UART_TXD" type="output"/>
+        <pin num="15" name="SPI_MOSI" type="input"/>
+        <pin num="16" name="~SPI_SS~" type="input"/>
+        <pin num="17" name="SPI_MISO" type="output"/>
+        <pin num="18" name="SPI_SCK" type="input"/>
+        <pin num="19" name="UART_RXD" type="input"/>
+        <pin num="20" name="VBATT" type="power_in"/>
+        <pin num="21" name="GPIO_1/RTC" type="input"/>
+        <pin num="22" name="CHIP_EN" type="input"/>
+        <pin num="23" name="VDDIO" type="power_in"/>
+        <pin num="24" name="1P3V_TP" type="power_in"/>
+        <pin num="25" name="GPIO_3" type="BiDi"/>
+        <pin num="26" name="GPIO_4" type="BiDi"/>
+        <pin num="27" name="GPIO_5" type="BiDi"/>
+        <pin num="28" name="GND_3" type="power_in"/>
+        <pin num="29" name="PADDLEGND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="atmel-ml" part="SAMD21G15-M">
+      <aliases>
+        <alias>SAMD21G16-M</alias>
+        <alias>SAMD21G17-M</alias>
+        <alias>SAMD21G18-M</alias>
+      </aliases>
+      <description>QFN48, 32K Flash, 4K RAM, 48MHz, CortexM0+</description>
+      <docs>http://www.microchip.com/downloads/en/DeviceDoc/40001882A.pdf</docs>
+      <footprints>
+        <fp>Housings_DFN_QFN:QFN-48-1EP_7x7mm_Pitch0.5mm</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">SAMD21G15-M</field>
+        <field name="Footprint">Housings_DFN_QFN:QFN-48-1EP_7x7mm_Pitch0.5mm</field>
+        <field name="Part Number">SAMD21Gxx-M</field>
+      </fields>
+      <pins>
+        <pin num="1" name="PA00/XIN32" type="BiDi"/>
+        <pin num="2" name="PA01/XOUT32" type="BiDi"/>
+        <pin num="3" name="AIN0/PA02" type="BiDi"/>
+        <pin num="4" name="VREFA/PA03" type="BiDi"/>
+        <pin num="5" name="GNDANA" type="power_in"/>
+        <pin num="6" name="VDDANA" type="power_in"/>
+        <pin num="7" name="PB08" type="BiDi"/>
+        <pin num="8" name="PB09" type="BiDi"/>
+        <pin num="9" name="AIN4/PA04" type="BiDi"/>
+        <pin num="10" name="AIN5/PA05" type="BiDi"/>
+        <pin num="11" name="AIN6/PA06" type="BiDi"/>
+        <pin num="12" name="AIN7/PA07" type="BiDi"/>
+        <pin num="13" name="SERCOM0P0/PA08" type="BiDi"/>
+        <pin num="14" name="SERCOM0P1/PA09" type="BiDi"/>
+        <pin num="15" name="TCC1WO0/PA10" type="BiDi"/>
+        <pin num="16" name="TCC1WO1/PA11" type="BiDi"/>
+        <pin num="17" name="VDDIO" type="power_in"/>
+        <pin num="18" name="GND" type="power_in"/>
+        <pin num="19" name="TC5WO0/PB10" type="BiDi"/>
+        <pin num="20" name="TC5WO1/PB11" type="BiDi"/>
+        <pin num="21" name="SERCOM2P0/PA12" type="BiDi"/>
+        <pin num="22" name="SERCOM2P1/PA13" type="BiDi"/>
+        <pin num="23" name="PA14" type="BiDi"/>
+        <pin num="24" name="SERCOM2P3/PA15" type="BiDi"/>
+        <pin num="25" name="SERCOM1P0/PA16" type="BiDi"/>
+        <pin num="26" name="SERCOM1P1/PA17" type="BiDi"/>
+        <pin num="27" name="PA18" type="BiDi"/>
+        <pin num="28" name="SERCOM1P3/PA19" type="BiDi"/>
+        <pin num="29" name="TCC0WO6/PA20" type="BiDi"/>
+        <pin num="30" name="TCC0WO7/PA21" type="BiDi"/>
+        <pin num="31" name="TC4WO0/PA22" type="BiDi"/>
+        <pin num="32" name="TC4WO1/PA23" type="BiDi"/>
+        <pin num="33" name="PA24/USBDM" type="BiDi"/>
+        <pin num="34" name="PA25/USBDP" type="BiDi"/>
+        <pin num="35" name="GND" type="power_in"/>
+        <pin num="36" name="VDDIO" type="power_in"/>
+        <pin num="37" name="SERCOM5P2/PB22" type="BiDi"/>
+        <pin num="38" name="SERCOM5P3/PB23" type="BiDi"/>
+        <pin num="39" name="PA27" type="BiDi"/>
+        <pin num="40" name="~RESET~" type="input"/>
+        <pin num="41" name="PA28" type="BiDi"/>
+        <pin num="42" name="GND" type="power_in"/>
+        <pin num="43" name="VDDCORE" type="power_in"/>
+        <pin num="44" name="VDDIN" type="power_in"/>
+        <pin num="45" name="PA30/SWCLK" type="BiDi"/>
+        <pin num="46" name="PA31/SWDIO" type="BiDi"/>
+        <pin num="47" name="AIN10/PB02" type="BiDi"/>
+        <pin num="48" name="AIN11/PB03" type="BiDi"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="CP_Small">
+      <description>Polarised capacitor</description>
+      <footprints>
+        <fp>CP_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">CP_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="C_Small">
+      <description>Unpolarized capacitor</description>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="Crystal">
+      <description>Two pin crystal</description>
+      <footprints>
+        <fp>Crystal*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Y</field>
+        <field name="Value">Crystal</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="D_Bridge_+-AA">
+      <description>Diode bridge (pins: 1=+, 2=-, 3=AC, 4=AC)</description>
+      <footprints>
+        <fp>D?Bridge*</fp>
+        <fp>D?Rectifier*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">D_Bridge_+-AA</field>
+      </fields>
+      <pins>
+        <pin num="1" name="+" type="input"/>
+        <pin num="2" name="-" type="input"/>
+        <pin num="3" name="~" type="input"/>
+        <pin num="4" name="~" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="D_Schottky_ALT">
+      <description>Schottky diode, alternativ symbol</description>
+      <footprints>
+        <fp>TO-???*</fp>
+        <fp>*SingleDiode</fp>
+        <fp>*_Diode_*</fp>
+        <fp>*SingleDiode*</fp>
+        <fp>D_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">D_Schottky_ALT</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="Ferrite_Bead">
+      <description>Ferrite bead</description>
+      <footprints>
+        <fp>Inductor_*</fp>
+        <fp>L_*</fp>
+        <fp>*Ferrite*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">Ferrite_Bead</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="LED_ALT">
+      <description>LED generic, alternativ symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>LED*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">LED_ALT</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="POT">
+      <description>Potentiometer</description>
+      <footprints>
+        <fp>Potentiometer*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">RV</field>
+        <field name="Value">POT</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+        <pin num="3" name="3" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="R">
+      <description>Resistor</description>
+      <footprints>
+        <fp>R_*</fp>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="diodes-inc-ml" part="BCM857BS">
+      <description>65V Vce, 100mA IC, Matched Pair PNP Transistors, SOT-363</description>
+      <docs>https://www.diodes.com/assets/Datasheets/BCM857BS.pdf</docs>
+      <footprints>
+        <fp>SC?70*</fp>
+        <fp>SC?88*</fp>
+        <fp>SOT?363*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">BCM857BS</field>
+        <field name="Footprint">TO_SOT_Packages_SMD:SOT-363</field>
+      </fields>
+      <pins>
+        <pin num="1" name="E1" type="passive"/>
+        <pin num="2" name="B1" type="input"/>
+        <pin num="3" name="C2" type="passive"/>
+        <pin num="4" name="E2" type="passive"/>
+        <pin num="5" name="B2" type="input"/>
+        <pin num="6" name="C1" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="diodes-inc-ml" part="DMG2305UX">
+      <description>-20V Vds, -5.0A Id, P-Channel MOSFET, SOT-23-3</description>
+      <docs>https://www.diodes.com/assets/Datasheets/DMG2305UX.pdf</docs>
+      <footprints>
+        <fp>SOT?23*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">DMG2305UX</field>
+        <field name="Footprint">TO_SOT_Packages_SMD:SOT-23</field>
+      </fields>
+      <pins>
+        <pin num="1" name="G" type="input"/>
+        <pin num="2" name="S" type="passive"/>
+        <pin num="3" name="D" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ixys-ml" part="CPC1511Y">
+      <description>Solid State Relay current limit, thermal shutdown, 1-Form-A, Voff 230V, Ion 0.450A, SIP-4</description>
+      <footprints>
+        <fp>SIP-4</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">RL</field>
+        <field name="Value">CPC1511Y</field>
+        <field name="Manufacturer">IXYS</field>
+        <field name="Part Number">CPC1511Y</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+        <pin num="3" name="~" type="passive"/>
+        <pin num="4" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="onsemi-ml" part="MID400">
+      <description>AC Line Monitor, Logic Compatible, DIP8</description>
+      <footprints>
+        <fp>DIP*W7.62mm*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MID400</field>
+        <field name="Footprint">Housings_DIP:SMDIP-8_W7.62mm</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="NC" type="NotConnected"/>
+        <pin num="3" name="~" type="passive"/>
+        <pin num="4" name="NC" type="NotConnected"/>
+        <pin num="5" name="~" type="passive"/>
+        <pin num="6" name="~" type="passive"/>
+        <pin num="7" name="~" type="passive"/>
+        <pin num="8" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ti-ml" part="LMZ21700">
+      <description>650mA Simple Switcher Nano Module 17V Input</description>
+      <footprints>
+        <fp>SIL0008E*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">LMZ21700</field>
+      </fields>
+      <pins>
+        <pin num="1" name="SS" type="input"/>
+        <pin num="2" name="FB" type="input"/>
+        <pin num="3" name="PG" type="openCol"/>
+        <pin num="4" name="VOUT" type="power_out"/>
+        <pin num="5" name="GND" type="power_in"/>
+        <pin num="6" name="VOS" type="input"/>
+        <pin num="7" name="EN" type="input"/>
+        <pin num="8" name="VIN" type="power_in"/>
+        <pin num="9" name="GND" type="power_in"/>
+        <pin num="10" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="ti-ml" part="TPD2E2U06-Q1">
+      <description>Dual-Channel High-Speed ESD Protection</description>
+      <docs>http://www.ti.com/lit/gpn/tpd2e2u06-q1</docs>
+      <footprints>
+        <fp>SOT-23</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">TPD2E2U06-Q1</field>
+        <field name="Footprint">TO_SOT_Packages_SMD:SOT-543</field>
+      </fields>
+      <pins>
+        <pin num="1" name="IO1" type="input"/>
+        <pin num="2" name="IO2" type="input"/>
+        <pin num="3" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="triad-ml" part="VPP-XFMR">
+      <description>Transformer, single primary, dual secondary</description>
+      <fields>
+        <field name="Reference">T</field>
+        <field name="Value">VPP-XFMR</field>
+      </fields>
+      <pins>
+        <pin num="1" name="P1A" type="passive"/>
+        <pin num="3" name="P1B" type="passive"/>
+        <pin num="4" name="P2A" type="passive"/>
+        <pin num="6" name="P2B" type="passive"/>
+        <pin num="7" name="S1A" type="passive"/>
+        <pin num="9" name="S1B" type="passive"/>
+        <pin num="10" name="S2A" type="passive"/>
+        <pin num="12" name="S2B" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector">
+      <uri>/Library/Application Support/kicad/library/Connector.lib</uri>
+    </library>
+    <library logical="ESD_Protection">
+      <uri>/Library/Application Support/kicad/library/ESD_Protection.lib</uri>
+    </library>
+    <library logical="Logic_74xgxx">
+      <uri>/Library/Application Support/kicad/library/Logic_74xgxx.lib</uri>
+    </library>
+    <library logical="Mechanical">
+      <uri>/Library/Application Support/kicad/library/Mechanical.lib</uri>
+    </library>
+    <library logical="Switch">
+      <uri>/Library/Application Support/kicad/library/Switch.lib</uri>
+    </library>
+    <library logical="Transistor">
+      <uri>/Library/Application Support/kicad/library/Transistor.lib</uri>
+    </library>
+    <library logical="adafruit-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/adafruit-ml.lib</uri>
+    </library>
+    <library logical="atmel-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/atmel-ml.lib</uri>
+    </library>
+    <library logical="device">
+      <uri>/Library/Application Support/kicad/library/device.lib</uri>
+    </library>
+    <library logical="diodes-inc-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/diodes-inc-ml.lib</uri>
+    </library>
+    <library logical="ixys-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/ixys-ml.lib</uri>
+    </library>
+    <library logical="onsemi-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/onsemi-ml.lib</uri>
+    </library>
+    <library logical="ti-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/ti-ml.lib</uri>
+    </library>
+    <library logical="triad-ml">
+      <uri>/Users/mike/Documents/KiCAD/symbols/triad-ml.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="GND">
+      <node ref="U6" pin="12"/>
+      <node ref="Q1" pin="2"/>
+      <node ref="C20" pin="1"/>
+      <node ref="U2" pin="5"/>
+      <node ref="C19" pin="1"/>
+      <node ref="U2" pin="9"/>
+      <node ref="C8" pin="2"/>
+      <node ref="SW1" pin="2"/>
+      <node ref="C10" pin="2"/>
+      <node ref="J5" pin="5"/>
+      <node ref="U2" pin="10"/>
+      <node ref="C9" pin="2"/>
+      <node ref="J7" pin="3"/>
+      <node ref="TP3" pin="1"/>
+      <node ref="J7" pin="5"/>
+      <node ref="R8" pin="2"/>
+      <node ref="J7" pin="9"/>
+      <node ref="D2" pin="2"/>
+      <node ref="C1" pin="2"/>
+      <node ref="L3" pin="1"/>
+      <node ref="C16" pin="1"/>
+      <node ref="U8" pin="18"/>
+      <node ref="Q8" pin="2"/>
+      <node ref="Q9" pin="2"/>
+      <node ref="U8" pin="35"/>
+      <node ref="U8" pin="42"/>
+      <node ref="MK1" pin="1"/>
+      <node ref="C2" pin="2"/>
+      <node ref="U8" pin="5"/>
+      <node ref="R2" pin="2"/>
+      <node ref="C4" pin="2"/>
+      <node ref="C5" pin="2"/>
+      <node ref="C3" pin="2"/>
+      <node ref="U1" pin="9"/>
+      <node ref="U1" pin="5"/>
+      <node ref="U3" pin="5"/>
+      <node ref="U1" pin="10"/>
+      <node ref="U4" pin="5"/>
+      <node ref="J4" pin="2"/>
+      <node ref="J4" pin="4"/>
+      <node ref="J4" pin="6"/>
+      <node ref="Q2" pin="2"/>
+      <node ref="C6" pin="1"/>
+      <node ref="SW2" pin="2"/>
+      <node ref="C7" pin="1"/>
+      <node ref="R9" pin="2"/>
+      <node ref="R10" pin="2"/>
+      <node ref="C18" pin="1"/>
+      <node ref="C17" pin="2"/>
+      <node ref="U7" pin="2"/>
+      <node ref="J6" pin="5"/>
+      <node ref="J6" pin="1"/>
+      <node ref="Q5" pin="2"/>
+      <node ref="Q7" pin="2"/>
+      <node ref="Q6" pin="2"/>
+      <node ref="RV1" pin="1"/>
+      <node ref="R3" pin="2"/>
+      <node ref="U5" pin="2"/>
+      <node ref="J8" pin="3"/>
+      <node ref="D9" pin="1"/>
+      <node ref="D6" pin="1"/>
+      <node ref="U5" pin="2"/>
+      <node ref="C21" pin="1"/>
+      <node ref="C15" pin="1"/>
+      <node ref="D4" pin="3"/>
+      <node ref="C11" pin="1"/>
+      <node ref="C12" pin="1"/>
+      <node ref="D5" pin="3"/>
+      <node ref="U6" pin="28"/>
+      <node ref="U6" pin="29"/>
+      <node ref="C13" pin="1"/>
+      <node ref="C14" pin="1"/>
+      <node ref="U6" pin="9"/>
+      <node ref="D3" pin="3"/>
+      <node ref="U7" pin="2"/>
+      <node ref="C22" pin="1"/>
+    </net>
+    <net code="2" name="Net-(C19-Pad2)">
+      <node ref="C19" pin="2"/>
+      <node ref="U8" pin="1"/>
+      <node ref="Y1" pin="1"/>
+    </net>
+    <net code="3" name="Net-(J5-Pad4)">
+      <node ref="J5" pin="4"/>
+    </net>
+    <net code="4" name="Net-(J7-Pad6)">
+      <node ref="J7" pin="6"/>
+    </net>
+    <net code="5" name="Net-(J7-Pad7)">
+      <node ref="J7" pin="7"/>
+    </net>
+    <net code="6" name="Net-(J7-Pad8)">
+      <node ref="J7" pin="8"/>
+    </net>
+    <net code="7" name="Net-(J7-Pad10)">
+      <node ref="J7" pin="10"/>
+      <node ref="R23" pin="2"/>
+    </net>
+    <net code="8" name="Net-(R25-Pad2)">
+      <node ref="SW1" pin="1"/>
+      <node ref="R25" pin="2"/>
+    </net>
+    <net code="9" name="VCC">
+      <node ref="C5" pin="1"/>
+      <node ref="U7" pin="5"/>
+      <node ref="U5" pin="5"/>
+      <node ref="J8" pin="1"/>
+      <node ref="R5" pin="2"/>
+      <node ref="R11" pin="2"/>
+      <node ref="D7" pin="2"/>
+      <node ref="D8" pin="2"/>
+      <node ref="C14" pin="2"/>
+      <node ref="J7" pin="1"/>
+      <node ref="U7" pin="5"/>
+      <node ref="C13" pin="2"/>
+      <node ref="C18" pin="2"/>
+      <node ref="R26" pin="1"/>
+      <node ref="U6" pin="23"/>
+      <node ref="C12" pin="2"/>
+      <node ref="U5" pin="5"/>
+      <node ref="R22" pin="1"/>
+      <node ref="U1" pin="4"/>
+      <node ref="U1" pin="6"/>
+      <node ref="U6" pin="20"/>
+      <node ref="TP1" pin="1"/>
+      <node ref="C11" pin="2"/>
+      <node ref="R1" pin="1"/>
+      <node ref="U8" pin="6"/>
+      <node ref="U8" pin="44"/>
+      <node ref="R24" pin="2"/>
+      <node ref="U8" pin="36"/>
+      <node ref="U6" pin="10"/>
+      <node ref="U8" pin="17"/>
+      <node ref="C21" pin="2"/>
+    </net>
+    <net code="10" name="Net-(C20-Pad2)">
+      <node ref="C20" pin="2"/>
+      <node ref="Y1" pin="2"/>
+      <node ref="U8" pin="2"/>
+    </net>
+    <net code="11" name="Net-(J5-Pad6)">
+      <node ref="L3" pin="2"/>
+      <node ref="J5" pin="6"/>
+    </net>
+    <net code="12" name="Net-(C16-Pad2)">
+      <node ref="C16" pin="2"/>
+      <node ref="U8" pin="43"/>
+    </net>
+    <net code="13" name="/D4">
+      <node ref="U8" pin="19"/>
+      <node ref="Q8" pin="1"/>
+      <node ref="U7" pin="6"/>
+    </net>
+    <net code="14" name="/WINC_MOSI">
+      <node ref="U8" pin="21"/>
+      <node ref="U6" pin="15"/>
+    </net>
+    <net code="15" name="/D5">
+      <node ref="U8" pin="20"/>
+    </net>
+    <net code="16" name="/WINC_MISO">
+      <node ref="U6" pin="17"/>
+      <node ref="U8" pin="24"/>
+    </net>
+    <net code="17" name="/USB_ID">
+      <node ref="U8" pin="27"/>
+    </net>
+    <net code="18" name="/D7">
+      <node ref="R5" pin="1"/>
+      <node ref="U3" pin="6"/>
+      <node ref="U8" pin="30"/>
+    </net>
+    <net code="19" name="/WINC_EN">
+      <node ref="U6" pin="22"/>
+      <node ref="U8" pin="41"/>
+    </net>
+    <net code="20" name="/A2">
+      <node ref="U8" pin="48"/>
+      <node ref="J6" pin="6"/>
+    </net>
+    <net code="21" name="/A0">
+      <node ref="U8" pin="3"/>
+      <node ref="J6" pin="11"/>
+    </net>
+    <net code="22" name="/A3">
+      <node ref="U8" pin="9"/>
+      <node ref="Q5" pin="1"/>
+    </net>
+    <net code="23" name="/A4">
+      <node ref="U8" pin="10"/>
+      <node ref="Q6" pin="1"/>
+    </net>
+    <net code="24" name="/WINC_WAKE">
+      <node ref="U8" pin="7"/>
+      <node ref="U6" pin="11"/>
+    </net>
+    <net code="25" name="/~WINC_IRQ">
+      <node ref="U6" pin="13"/>
+      <node ref="U8" pin="8"/>
+    </net>
+    <net code="26" name="/A1">
+      <node ref="U8" pin="47"/>
+      <node ref="J6" pin="4"/>
+    </net>
+    <net code="27" name="/D2">
+      <node ref="U8" pin="15"/>
+      <node ref="R22" pin="2"/>
+      <node ref="J8" pin="2"/>
+    </net>
+    <net code="28" name="/D3">
+      <node ref="U8" pin="16"/>
+    </net>
+    <net code="29" name="/SCL">
+      <node ref="U8" pin="14"/>
+    </net>
+    <net code="30" name="/~WINC_SS">
+      <node ref="U6" pin="16"/>
+      <node ref="U8" pin="23"/>
+    </net>
+    <net code="31" name="/D6">
+      <node ref="R21" pin="1"/>
+      <node ref="U8" pin="29"/>
+    </net>
+    <net code="32" name="/A5">
+      <node ref="U8" pin="11"/>
+      <node ref="J6" pin="13"/>
+    </net>
+    <net code="33" name="/A6">
+      <node ref="U8" pin="12"/>
+      <node ref="J6" pin="14"/>
+    </net>
+    <net code="34" name="/AREF">
+      <node ref="J6" pin="12"/>
+      <node ref="U8" pin="4"/>
+    </net>
+    <net code="35" name="/D0">
+      <node ref="Q1" pin="1"/>
+      <node ref="R3" pin="1"/>
+      <node ref="U8" pin="31"/>
+    </net>
+    <net code="36" name="/D1">
+      <node ref="U5" pin="6"/>
+      <node ref="U8" pin="32"/>
+      <node ref="Q9" pin="1"/>
+    </net>
+    <net code="37" name="/WINC_SCK">
+      <node ref="U6" pin="18"/>
+      <node ref="U8" pin="22"/>
+    </net>
+    <net code="38" name="/~WINC_RST">
+      <node ref="U8" pin="39"/>
+      <node ref="U6" pin="4"/>
+    </net>
+    <net code="39" name="/MOSI">
+      <node ref="U7" pin="4"/>
+      <node ref="U8" pin="25"/>
+    </net>
+    <net code="40" name="/SCK">
+      <node ref="U5" pin="4"/>
+      <node ref="U8" pin="26"/>
+      <node ref="Q2" pin="1"/>
+    </net>
+    <net code="41" name="/MISO">
+      <node ref="U8" pin="28"/>
+      <node ref="R11" pin="1"/>
+      <node ref="U4" pin="6"/>
+    </net>
+    <net code="42" name="/SDA">
+      <node ref="Q7" pin="1"/>
+      <node ref="U8" pin="13"/>
+    </net>
+    <net code="43" name="/TX">
+      <node ref="U8" pin="37"/>
+    </net>
+    <net code="44" name="/RX">
+      <node ref="U8" pin="38"/>
+    </net>
+    <net code="45" name="Net-(D8-Pad1)">
+      <node ref="R20" pin="2"/>
+      <node ref="D8" pin="1"/>
+    </net>
+    <net code="46" name="Net-(U6-Pad1)">
+      <node ref="U6" pin="1"/>
+    </net>
+    <net code="47" name="Net-(U6-Pad14)">
+      <node ref="U6" pin="14"/>
+    </net>
+    <net code="48" name="Net-(U6-Pad19)">
+      <node ref="U6" pin="19"/>
+    </net>
+    <net code="49" name="Net-(U6-Pad2)">
+      <node ref="U6" pin="2"/>
+    </net>
+    <net code="50" name="Net-(U6-Pad21)">
+      <node ref="U6" pin="21"/>
+    </net>
+    <net code="51" name="Net-(C15-Pad2)">
+      <node ref="C15" pin="2"/>
+      <node ref="C17" pin="1"/>
+      <node ref="U6" pin="24"/>
+    </net>
+    <net code="52" name="Net-(U6-Pad25)">
+      <node ref="U6" pin="25"/>
+    </net>
+    <net code="53" name="Net-(R20-Pad1)">
+      <node ref="R20" pin="1"/>
+      <node ref="U6" pin="26"/>
+    </net>
+    <net code="54" name="Net-(U6-Pad3)">
+      <node ref="U6" pin="3"/>
+    </net>
+    <net code="55" name="VBUS">
+      <node ref="J5" pin="1"/>
+      <node ref="L1" pin="1"/>
+      <node ref="D6" pin="4"/>
+      <node ref="C6" pin="2"/>
+    </net>
+    <net code="56" name="/USB_P">
+      <node ref="U8" pin="34"/>
+      <node ref="J5" pin="3"/>
+      <node ref="D6" pin="2"/>
+    </net>
+    <net code="57" name="/USB_N">
+      <node ref="U8" pin="33"/>
+      <node ref="D6" pin="3"/>
+      <node ref="J5" pin="2"/>
+    </net>
+    <net code="58" name="/~RESET~">
+      <node ref="R24" pin="1"/>
+      <node ref="U8" pin="40"/>
+      <node ref="C22" pin="2"/>
+      <node ref="R25" pin="1"/>
+      <node ref="R23" pin="1"/>
+    </net>
+    <net code="59" name="/SWDIO">
+      <node ref="J7" pin="2"/>
+      <node ref="U8" pin="46"/>
+    </net>
+    <net code="60" name="/SWCLK">
+      <node ref="U8" pin="45"/>
+      <node ref="J7" pin="4"/>
+    </net>
+    <net code="62" name="Net-(C4-Pad1)">
+      <node ref="U1" pin="1"/>
+      <node ref="C4" pin="1"/>
+    </net>
+    <net code="63" name="Net-(R1-Pad2)">
+      <node ref="U1" pin="2"/>
+      <node ref="R2" pin="1"/>
+      <node ref="R1" pin="2"/>
+    </net>
+    <net code="64" name="Net-(U1-Pad3)">
+      <node ref="U1" pin="3"/>
+    </net>
+    <net code="65" name="Net-(D2-Pad4)">
+      <node ref="D2" pin="4"/>
+      <node ref="T1" pin="10"/>
+      <node ref="T1" pin="7"/>
+    </net>
+    <net code="66" name="Net-(D2-Pad3)">
+      <node ref="D2" pin="3"/>
+      <node ref="T1" pin="12"/>
+      <node ref="T1" pin="9"/>
+    </net>
+    <net code="67" name="Net-(C9-Pad1)">
+      <node ref="C9" pin="1"/>
+      <node ref="U2" pin="1"/>
+    </net>
+    <net code="68" name="Net-(R7-Pad2)">
+      <node ref="U2" pin="2"/>
+      <node ref="R8" pin="1"/>
+      <node ref="R7" pin="2"/>
+    </net>
+    <net code="69" name="Net-(U2-Pad3)">
+      <node ref="U2" pin="3"/>
+    </net>
+    <net code="70" name="LINE">
+      <node ref="RL2" pin="3"/>
+      <node ref="RL1" pin="3"/>
+      <node ref="T1" pin="1"/>
+      <node ref="J2" pin="1"/>
+      <node ref="T1" pin="4"/>
+    </net>
+    <net code="71" name="NEUT">
+      <node ref="U3" pin="3"/>
+      <node ref="J2" pin="2"/>
+      <node ref="T1" pin="6"/>
+      <node ref="U4" pin="3"/>
+      <node ref="T1" pin="3"/>
+      <node ref="J1" pin="2"/>
+    </net>
+    <net code="72" name="Net-(U3-Pad2)">
+      <node ref="U3" pin="2"/>
+    </net>
+    <net code="73" name="Net-(U3-Pad4)">
+      <node ref="U3" pin="4"/>
+    </net>
+    <net code="74" name="Net-(U3-Pad7)">
+      <node ref="U3" pin="7"/>
+    </net>
+    <net code="75" name="Net-(U4-Pad2)">
+      <node ref="U4" pin="2"/>
+    </net>
+    <net code="76" name="Net-(U4-Pad4)">
+      <node ref="U4" pin="4"/>
+    </net>
+    <net code="77" name="Net-(U4-Pad7)">
+      <node ref="U4" pin="7"/>
+    </net>
+    <net code="78" name="Net-(J4-Pad5)">
+      <node ref="R18" pin="1"/>
+      <node ref="R17" pin="2"/>
+      <node ref="J4" pin="5"/>
+    </net>
+    <net code="79" name="Net-(C7-Pad2)">
+      <node ref="L1" pin="2"/>
+      <node ref="Q3" pin="3"/>
+      <node ref="Q4" pin="1"/>
+      <node ref="C7" pin="2"/>
+    </net>
+    <net code="80" name="Net-(Q4-Pad2)">
+      <node ref="R9" pin="1"/>
+      <node ref="Q4" pin="5"/>
+      <node ref="Q4" pin="6"/>
+      <node ref="Q4" pin="2"/>
+    </net>
+    <net code="81" name="Net-(Q3-Pad1)">
+      <node ref="Q3" pin="1"/>
+      <node ref="R10" pin="1"/>
+      <node ref="Q4" pin="3"/>
+    </net>
+    <net code="82" name="Net-(R19-Pad1)">
+      <node ref="R19" pin="1"/>
+      <node ref="U6" pin="27"/>
+    </net>
+    <net code="83" name="Net-(D7-Pad1)">
+      <node ref="R19" pin="2"/>
+      <node ref="D7" pin="1"/>
+    </net>
+    <net code="84" name="Net-(R12-Pad2)">
+      <node ref="R12" pin="2"/>
+      <node ref="U4" pin="1"/>
+    </net>
+    <net code="85" name="Net-(R6-Pad2)">
+      <node ref="R6" pin="2"/>
+      <node ref="U3" pin="1"/>
+    </net>
+    <net code="86" name="Net-(D3-Pad2)">
+      <node ref="R15" pin="2"/>
+      <node ref="U5" pin="1"/>
+      <node ref="D3" pin="2"/>
+    </net>
+    <net code="87" name="Net-(D3-Pad1)">
+      <node ref="R14" pin="2"/>
+      <node ref="U5" pin="3"/>
+      <node ref="D3" pin="1"/>
+    </net>
+    <net code="88" name="Net-(J4-Pad1)">
+      <node ref="J4" pin="1"/>
+      <node ref="R13" pin="2"/>
+      <node ref="R14" pin="1"/>
+    </net>
+    <net code="89" name="Net-(J4-Pad3)">
+      <node ref="R15" pin="1"/>
+      <node ref="R16" pin="2"/>
+      <node ref="J4" pin="3"/>
+    </net>
+    <net code="90" name="Net-(D5-Pad1)">
+      <node ref="R17" pin="1"/>
+      <node ref="D5" pin="2"/>
+      <node ref="D5" pin="1"/>
+      <node ref="R13" pin="1"/>
+      <node ref="L2" pin="2"/>
+      <node ref="R16" pin="1"/>
+    </net>
+    <net code="91" name="Net-(D4-Pad1)">
+      <node ref="D4" pin="1"/>
+    </net>
+    <net code="92" name="Net-(D4-Pad2)">
+      <node ref="U7" pin="1"/>
+      <node ref="R18" pin="2"/>
+      <node ref="D4" pin="2"/>
+    </net>
+    <net code="93" name="/P1">
+      <node ref="J3" pin="2"/>
+      <node ref="R6" pin="1"/>
+    </net>
+    <net code="94" name="/P2">
+      <node ref="J3" pin="3"/>
+      <node ref="R12" pin="1"/>
+    </net>
+    <net code="95" name="Net-(D9-Pad2)">
+      <node ref="R21" pin="2"/>
+      <node ref="D9" pin="2"/>
+    </net>
+    <net code="96" name="/ALM">
+      <node ref="J3" pin="1"/>
+      <node ref="RL2" pin="4"/>
+    </net>
+    <net code="97" name="/PR1">
+      <node ref="RL1" pin="4"/>
+      <node ref="J1" pin="1"/>
+    </net>
+    <net code="98" name="Net-(J6-Pad3)">
+      <node ref="RV1" pin="2"/>
+      <node ref="J6" pin="3"/>
+    </net>
+    <net code="99" name="Net-(J6-Pad17)">
+      <node ref="Q6" pin="3"/>
+      <node ref="J6" pin="17"/>
+    </net>
+    <net code="100" name="Net-(J6-Pad18)">
+      <node ref="J6" pin="18"/>
+      <node ref="Q7" pin="3"/>
+    </net>
+    <net code="101" name="Net-(J6-Pad16)">
+      <node ref="Q5" pin="3"/>
+      <node ref="J6" pin="16"/>
+    </net>
+    <net code="102" name="Net-(J6-Pad10)">
+      <node ref="J6" pin="10"/>
+    </net>
+    <net code="103" name="Net-(J6-Pad7)">
+      <node ref="J6" pin="7"/>
+    </net>
+    <net code="104" name="Net-(J6-Pad8)">
+      <node ref="J6" pin="8"/>
+    </net>
+    <net code="105" name="Net-(J6-Pad9)">
+      <node ref="J6" pin="9"/>
+    </net>
+    <net code="106" name="Net-(R26-Pad2)">
+      <node ref="R26" pin="2"/>
+      <node ref="SW2" pin="1"/>
+      <node ref="U7" pin="3"/>
+    </net>
+    <net code="107" name="/VSUPPLY">
+      <node ref="U2" pin="7"/>
+      <node ref="U2" pin="8"/>
+      <node ref="C8" pin="1"/>
+      <node ref="C3" pin="1"/>
+      <node ref="U1" pin="8"/>
+      <node ref="U1" pin="7"/>
+      <node ref="D1" pin="1"/>
+      <node ref="Q3" pin="2"/>
+      <node ref="Q4" pin="4"/>
+    </net>
+    <net code="108" name="+12V">
+      <node ref="D1" pin="2"/>
+      <node ref="D2" pin="1"/>
+      <node ref="C1" pin="1"/>
+      <node ref="C2" pin="1"/>
+    </net>
+    <net code="109" name="Net-(D10-Pad2)">
+      <node ref="R4" pin="1"/>
+      <node ref="D10" pin="2"/>
+    </net>
+    <net code="110" name="Net-(R28-Pad2)">
+      <node ref="R28" pin="2"/>
+      <node ref="RL1" pin="1"/>
+    </net>
+    <net code="111" name="Net-(R29-Pad2)">
+      <node ref="RL2" pin="1"/>
+      <node ref="R29" pin="2"/>
+    </net>
+    <net code="112" name="Net-(D10-Pad1)">
+      <node ref="Q1" pin="3"/>
+      <node ref="D10" pin="1"/>
+      <node ref="R28" pin="1"/>
+    </net>
+    <net code="113" name="Net-(Q2-Pad3)">
+      <node ref="Q8" pin="3"/>
+      <node ref="Q9" pin="3"/>
+      <node ref="Q2" pin="3"/>
+      <node ref="R29" pin="1"/>
+    </net>
+    <net code="115" name="+5V">
+      <node ref="RL1" pin="2"/>
+      <node ref="U4" pin="8"/>
+      <node ref="U3" pin="8"/>
+      <node ref="RL2" pin="2"/>
+      <node ref="R4" pin="2"/>
+      <node ref="L2" pin="1"/>
+      <node ref="RV1" pin="3"/>
+      <node ref="J6" pin="15"/>
+      <node ref="J6" pin="2"/>
+      <node ref="TP2" pin="1"/>
+      <node ref="R7" pin="1"/>
+      <node ref="C10" pin="1"/>
+      <node ref="U2" pin="4"/>
+      <node ref="U2" pin="6"/>
+    </net>
+  </nets>
+</export>

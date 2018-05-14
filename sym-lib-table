@@ -1,0 +1,13 @@
+(sym_lib_table
+  (lib (name atmel-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/atmel-ml.lib)(options "")(descr ""))
+  (lib (name diodes-inc-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/diodes-inc-ml.lib)(options "")(descr ""))
+  (lib (name infineon-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/infineon-ml.lib)(options "")(descr ""))
+  (lib (name linear-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/linear-ml.lib)(options "")(descr ""))
+  (lib (name memory-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/memory-ml.lib)(options "")(descr ""))
+  (lib (name murata-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/murata-ml.lib)(options "")(descr ""))
+  (lib (name nxp-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/nxp-ml.lib)(options "")(descr ""))
+  (lib (name onsemi-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/onsemi-ml.lib)(options "")(descr ""))
+  (lib (name ti-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/ti-ml.lib)(options "")(descr ""))
+  (lib (name triad-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/triad-ml.lib)(options "")(descr ""))
+  (lib (name Raspberry-ml)(type Legacy)(uri /Users/mike/Documents/KiCAD/symbols/Raspberry-ml.lib)(options "")(descr ""))
+)

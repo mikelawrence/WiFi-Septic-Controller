@@ -11,7 +11,7 @@ Not tested yet.
 * Rev 1.0 PCB has been ordered from [OSH Park](https://oshpark.com/shared_projects/bguWSc9J).
 
 ## Board Preview
-<img src="meta/WiFi-Gate-Controller-3D.png">
+<img src="meta/WiFi-Septic-Controller-3D.png">
 
 ## Design
 ### Input Power
@@ -88,4 +88,4 @@ Click the "Update Firmware" button.
 Finally open the "Septic_WiFi_Controller.ino" project downloaded from GitHub. Update the necessary defines for your Wireless network and MQTT server settings see the [Code README](code/README.md) for more information. Now upload it just like the "WiFi101 FirmwareUpdater" example. All done!
 
 # Acknowledgments
-[Arduino](www.arduino.cc) kindly develops open source hardware an software which makes writing software for the board incredibly easy.
+[Arduino](www.arduino.cc) kindly develops open source hardware and software which makes writing software for the board incredibly easy.

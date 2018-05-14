@@ -1,3 +1,4 @@
 
 *.bak
 *.kicad_pcb-bak
+code/Septic_WiFi_Controller/arduino_secrets.h

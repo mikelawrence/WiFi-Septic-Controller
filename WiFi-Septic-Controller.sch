@@ -2525,7 +2525,7 @@ P1
 Text Label 14450 4100 2    60   ~ 0
 P2
 Text Notes 14950 3200 0    60   ~ 0
-ALM
+AL
 Text Notes 14950 3300 0    60   ~ 0
 S1
 Text Notes 14950 3400 0    60   ~ 0

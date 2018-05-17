@@ -3,3 +3,4 @@
 *.kicad_pcb-bak
 code/Septic_WiFi_Controller/arduino_secrets.h
 Things ToDo.txt
+code/WiFi_Septic_Controller/arduino_secrets.h

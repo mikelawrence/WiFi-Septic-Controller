@@ -1,4 +1,4 @@
-(kicad_pcb (version 20171130) (host pcbnew "(5.0.0-rc2-dev-640-gbf135b0)")
+(kicad_pcb (version 20171130) (host pcbnew "(5.0.0-rc2-dev-707-g2ed24a4)")
 
   (general
     (thickness 1.6)
@@ -538,9 +538,69 @@
       (rotate (xyz -90 0 0))
     )
     (model ${KIPRJMOD}/packages3d/TSW-118-14-G-S.stp
-      (offset (xyz 21.58999967575073 0 12.69999980926514))
+      (offset (xyz 21.33599967956543 0 12.69999980926514))
       (scale (xyz 1 1 1))
       (rotate (xyz 90 0 0))
+    )
+    (model ${KIPRJMOD}/packages3d/keystone-PN2027.STEP
+      (offset (xyz -5.58799991607666 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model ${KIPRJMOD}/packages3d/keystone-PN2027.STEP
+      (offset (xyz 69.4689989566803 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model ${KIPRJMOD}/packages3d/keystone-PN2027.STEP
+      (offset (xyz -5.58799991607666 -30.98799953460693 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model ${KIPRJMOD}/packages3d/keystone-PN2027.STEP
+      (offset (xyz 69.4689989566803 -30.98799953460693 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz -5.58799991607666 0 1.523999977111816))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz 69.4689989566803 0 1.523999977111816))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz -5.58799991607666 -30.98799953460693 1.523999977111816))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz 69.4689989566803 -30.98799953460693 1.523999977111816))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz -5.58799991607666 0 11.12519983291626))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz 69.4689989566803 0 11.12519983291626))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz -5.58799991607666 -30.98799953460693 11.12519983291626))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
+    (model "${KIPRJMOD}/packages3d/User Library-User Library-4-40 x _125 sems.STEP"
+      (offset (xyz 69.4689989566803 -30.98799953460693 11.12519983291626))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
     )
   )
 

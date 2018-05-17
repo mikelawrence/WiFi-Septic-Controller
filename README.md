@@ -3,7 +3,7 @@ I had some problems with my newly installed aerobic septic system when hurricane
 
 This PCB is designed using [KiCad](http://kicad-pcb.org). Note this design is using a nightly build of KiCad NOT the current released version (4.07).
 
-_Note: The LMZ21700 Simple Switcher, SAMD21G18, and ATWINC1500 have exposed pads on the bottom which requires either a reflow oven or hot air to solder properly._
+_Note: The LMZ21700 Simple Switcher, SAMD21G18 ARM Processor, and ATWINC1500 WiFi Module have exposed pads on the bottom which requires either a reflow oven or hot air to solder properly._
 
 ## Status
 Not tested yet.

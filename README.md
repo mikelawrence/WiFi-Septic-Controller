@@ -3,12 +3,14 @@ I had some problems with my newly installed aerobic septic system when hurricane
 
 This PCB is designed using [KiCad](http://kicad-pcb.org). Note this design is using a nightly build of KiCad NOT the current released version (4.07).
 
+_Note: There is dangerous voltage present on this PCB. Use care when handling this board. Housing this board in a box is required to protect users from electrocution._
+
 _Note: The LMZ21700 Simple Switcher, SAMD21G18 ARM Processor, and ATWINC1500 WiFi Module have exposed pads on the bottom which requires either a reflow oven or hot air to solder properly._
 
 ## Status
-Not tested yet.
-
-* Rev 1.0 PCB has been ordered from [OSH Park](https://oshpark.com/shared_projects/bguWSc9J).
+* Rev 1.0 PCB has been ordered, assembled, and tested. Hardware is fully operational.
+  * Order the PCB from [OSH Park](https://oshpark.com/shared_projects/bguWSc9J).
+  * Order the parts from Mouser using this [Shared BOM](https://www.mouser.com/ProjectManager/ProjectDetail.aspx?AccessID=a71ed4612f).
 
 ## Board Preview
 <img src="meta/WiFi-Septic-Controller-3D.png">

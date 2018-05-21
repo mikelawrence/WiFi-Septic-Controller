@@ -44,7 +44,7 @@ RL1 RL2 ,2,"CPC1511Y","ixys-ml:SIP-4","","CPC1511Y","IXYS","Mouser","849-CPC1511
 RV1 ,1,"10k","Potentiometers:Potentiometer_Trimmer_Bourns_3339P_Horizontal","","3339P-1-103LF","Bourns","Mouser","652-3339P-1-103LF","",""
 SW1 ,1,"Reset","Buttons_Switches_SMD:SW_SPST_B3U-1000P","http://www.mouser.com/ds/2/307/en-b3u-3615.pdf","B3U-1000P","Omron","Mouser","653-B3U-1000P","",""
 SW2 ,1,"Pump","Buttons_Switches_SMD:SW_SPST_PTS645","","PTS645SK70SMTR92LFS","Panasonic","Mouser","611-PTS645SM13SMTR92","",""
-T1 ,1,"VPP-XFMR","triad-ml:VPP","","VPP20-250","Triad Magnetics","Mouser","553-VPP20-250","",""
+T1 ,1,"VPP-XFMR","triad-ml:VPP","","VPP16-310","Triad Magnetics","Mouser","553-VPP16-310","",""
 TP1 ,1,"3.3V","Connectors_TestPoints:Test_Point_Pad_1.0x1.0mm",""
 TP2 ,1,"5V","Connectors_TestPoints:Test_Point_Pad_1.0x1.0mm",""
 TP3 ,1,"GND","Connectors_TestPoints:Test_Point_Keystone_5010-5014_Multipurpose","","5126","Keystone","Mouser","534-5126","",""

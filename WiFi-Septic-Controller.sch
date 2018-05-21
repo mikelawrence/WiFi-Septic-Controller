@@ -1395,7 +1395,7 @@ F 3 "" H 3000 2050 50  0001 C CNN
 F 4 "Triad Magnetics" H 3000 2050 50  0001 C CNN "Manufacturer"
 F 5 "VPP20-250" H 3000 2050 50  0001 C CNN "Part Number"
 F 6 "Mouser" H 3000 2050 50  0001 C CNN "Vendor"
-F 7 "553-VPP20-250" H 3000 2050 50  0001 C CNN "Vendor Part Number"
+F 7 "553-VPP16-310" H 3000 2050 50  0001 C CNN "Vendor Part Number"
 	1    3000 2050
 	1    0    0    -1  
 $EndComp
@@ -2536,29 +2536,29 @@ Text Notes 15150 3300 0    60   ~ 0
 - Eff. Pump Power Lead
 Text Notes 15150 3200 0    60   ~ 0
 - Alarm Output
-Text Notes 14950 5200 0    60   ~ 0
+Text Notes 14950 5750 0    60   ~ 0
 AA1
-Text Notes 15200 5200 0    60   ~ 0
+Text Notes 15200 5750 0    60   ~ 0
 - Air Alarm
-Text Notes 14950 5300 0    60   ~ 0
+Text Notes 14950 5650 0    60   ~ 0
 AA2
-Text Notes 15200 5300 0    60   ~ 0
+Text Notes 15200 5650 0    60   ~ 0
 - Air Alarm
-Text Notes 14950 5400 0    60   ~ 0
+Text Notes 14950 5550 0    60   ~ 0
 FA1
-Text Notes 15200 5400 0    60   ~ 0
+Text Notes 15200 5550 0    60   ~ 0
 - Float Alarm
-Text Notes 14950 5500 0    60   ~ 0
+Text Notes 14950 5450 0    60   ~ 0
 FA2
-Text Notes 15200 5500 0    60   ~ 0
+Text Notes 15200 5450 0    60   ~ 0
 - Float Alarm
-Text Notes 14950 5600 0    60   ~ 0
+Text Notes 14950 5350 0    60   ~ 0
 BA1
-Text Notes 15200 5600 0    60   ~ 0
+Text Notes 15200 5350 0    60   ~ 0
 - Bleach Alarm
-Text Notes 14950 5700 0    60   ~ 0
+Text Notes 14950 5250 0    60   ~ 0
 BA2
-Text Notes 15200 5700 0    60   ~ 0
+Text Notes 15200 5250 0    60   ~ 0
 - Bleach Alarm
 Wire Wire Line
 	13600 5000 13750 5000
@@ -3035,7 +3035,7 @@ F 7 "595-SN74LVC2G14DBVG4" H 14350 8100 50  0001 C CNN "Vendor Part Number"
 	-1   0    0    -1  
 $EndComp
 Text Notes 10950 5150 0    75   Italic 15
-Air Compressor\nAlarm
+Bleach Level\nAlarm
 $Comp
 L power:VCC #PWR0101
 U 1 1 5F668C4E
@@ -3697,7 +3697,7 @@ Spare\nSense
 Text Notes 10950 5750 0    75   Italic 15
 Tank High Float\nAlarm
 Text Notes 10950 6250 0    75   Italic 15
-Bleach Level\nAlarm
+Air Pump\nAlarm
 Text Notes 11150 3750 2    60   ~ 0
 10mA
 Wire Wire Line

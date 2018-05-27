@@ -40,9 +40,9 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 #define VERSION                   "0.1"
 ```
 
-* "ENABLE_WATCHDOG" - When defined the Watchdog Timer is enabled with a 16 second timeout. This will reset the ARM processor is something goes bad.
-* "ENABLE_OTA_UPDATES" - When defined the sketch can be updated using Arduino's Over-The-Air Update capability.
-* "ENABLE_SERIAL" - When defined then status information is sent out the serial connection which in this case is the USB port. Otherwise the serial port won't even be enabled.
+* "ENABLE_WATCHDOG" - When defined, the Watchdog Timer is enabled with a 16 second timeout. This will reset the ARM processor is something goes bad.
+* "ENABLE_OTA_UPDATES" - When defined, the sketch can be updated using Arduino's Over-The-Air Update capability.
+* "ENABLE_SERIAL" - When defined, status information is sent out the serial connection which in this case is the USB port. Otherwise the serial port won't even be enabled.
 
 ```c
 /******************************************************************
@@ -78,16 +78,15 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 #define HASS_NODE_NAME            "septic"
 ```
 * "BOARD_NAME" - Names the board. It is used is several places including Home Assistant Name, OTA Name, and MQTT Client ID. This is a string.
-* "DEBOUNCE_TIME" - How long to ignore contact changes on the input before accepting them as valid. This is an integer and the units are milliseconds.
+* "DEBOUNCE_TIME" - How long to ignore sense changes on the input before accepting them as valid. This is an integer and the units are milliseconds.
 * "PUMP_TOGGLE_DEBOUNCE_TIME" - How long to ignore contact changes on Pump Toggle switch. This is an integer and the units are milliseconds.
-* "ALARM_DEBOUNCE_TIME" - How long to ignore contact changes on Alarm switch input. This is an integer and the units are milliseconds. Should be significantly larger than DEBOUNCE_TIME.
+* "ALARM_DEBOUNCE_TIME" - How long to ignore contact changes on Alarm switch inputs. This is an integer and the units are milliseconds. Should be significantly larger than DEBOUNCE_TIME.
 * "PUMP_DEADBAND_TIME" - How long after the Pump State Machine changes states before allowing another state change. This is an integer and the units are milliseconds.
 * "ALARM_DEADBAND_TIME" - How long after the Alarm State Machine changes states before allowing another state change. This is an integer and the units are milliseconds.
-* "TEMP_RATE" - How often the temperature should be sampled and updated via MQTT. This is an integer and the units are milliseconds. The time must be greater than 5000 milliseconds.
-* "TEMP_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT. This is an integer and the units are milliseconds. The time must be greater than 5000 milliseconds.
-* "TEMP_PUMP_ON_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT when the effluent pump is on. The Solid State Relay will cause the temperature to rise and quicker temperature sampling is nice. This is an integer and the units are milliseconds. The time must be greater than 5000 milliseconds.
+* "TEMP_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT. This is an integer and the units are milliseconds. The time should not be less than 5000 milliseconds.
+* "TEMP_PUMP_ON_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT when the effluent pump is on. The Solid State Relay will cause the temperature to rise and quicker temperature sampling is nice. This is an integer and the units are milliseconds. The time should not be less than 5000 milliseconds.
 * "HASS_PREFIX" - The Home Assistant MQTT Discovery Prefix as defined in your system. This is a string.
-* "HASS_NODE_NAME" - Used in the MQTT topics to identify the cover and sensor to Home Assistant. Home Assistant calls this the node id. It is a string and must not contain special characters including a space.
+* "HASS_NODE_NAME" - Used in the MQTT topics to identify the cover and sensor to Home Assistant. Home Assistant calls this the node id. It is a string and should not contain special characters including spaces.
 
 ## Home Assistant Setup
 The sketch is setup to enable MQTT Discovery on Home Assistant. If you don't want to use discovery here is the configuration of the WiFi Septic Controller in Home Assistant. Note the 'Septic' in the name: definitions you see in the example yaml is the "BOARD_NAME" and 'septic' in topics is "HASS_NODE_NAME". The WiFi Septic Controller uses the [MQTT Sensor](https://home-assistant.io/components/sensor.mqtt/) and [MQTT Binary Sensor](https://www.home-assistant.io/components/binary_sensor.mqtt/) platforms.

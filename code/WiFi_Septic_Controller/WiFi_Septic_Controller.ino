@@ -1,14 +1,22 @@
 /*
   Septic WiFi Controller 
   
-  This code interfaces a remote gate opener (US Automation) using a custom 
+  This code acts as an Aerobic Septic Controller using a custom 
   SAMD/ATWINC1500C board. The board is compatible with an Arduino MKR1000.
-
+  The sketch is primarily two state machines: one for effluent pump control
+  and one for alarm state. The pump state machine can detect when the 
+  override float has applied power to the pump thus providing some indication 
+  of over usage or rain seepage into the tanks. The sketch is a discoverable 
+  set of sensors for Home Assistant, an open-source home automation platform 
+  running on Python.
+   
+  MQTT, a machine-to-machine (M2M)/"Internet of Things" connectivity 
+  protocol, is the basis of communication with Home Assistant.
+  
   The following libraries must be installed using Library Manager:
   
     WiFi101 by Arduino
     WiFiOTA by Arduino
-    RTCZero by Arduino
     LiquidCrystal by Arduino
     MQTT by Joel Gaehwiler
     OneWire by Paul Stoffregen and many others
@@ -65,7 +73,7 @@
  * Defines
  ******************************************************************/
 // Enumeration for pump state
-enum PumpStateEnum {PS_RESET, PS_OFF, PS_OFF_A, PS_MANUAL_ON, PS_MANUAL_ON_A, PS_AUTO_ON, PS_OVER_ON, PS_ALARM_ON}; 
+enum PumpStateEnum {PS_RESET, PS_TANK_EMPTY, PS_OFF, PS_OFF_A, PS_MANUAL_ON, PS_MANUAL_ON_A, PS_AUTO_ON, PS_OVER_ON}; 
 // Enumeration for alarm state
 enum AlarmStateEnum {AS_RESET, AS_OFF, AS_TANK_HIGH, AS_AIR_PUMP, AS_BLEACH_LEVEL}; 
 
@@ -77,7 +85,7 @@ WiFiClient      net;
 // MQTT CLient
 MQTTClient      mqtt(1024);
 // current input state, arranged in array by input_pins
-uint8_t         inputState[NUMBER_INPUTS] = {-1, -1, -1, -1, -1, -1};
+int8_t         inputState[NUMBER_INPUTS] = {-1, -1, -1, -1, -1, -1};
 // when true a hardware reset just occurred
 bool            resetOccurred = true;
 // when true WiFi was recently disconnected from the network
@@ -109,8 +117,7 @@ bool isPumpOn() {
   return curPumpState == PS_MANUAL_ON ||
          curPumpState == PS_MANUAL_ON_A ||
          curPumpState == PS_AUTO_ON ||
-         curPumpState == PS_OVER_ON ||
-         curPumpState == PS_ALARM_ON;
+         curPumpState == PS_OVER_ON;
 }
 
 /******************************************************************
@@ -122,52 +129,46 @@ bool isPumpOn() {
 void displayPumpState(bool force) {
   // display current pump state
   switch (curPumpState) {
+    case PS_TANK_EMPTY:
+      Logln("Entered PS_TANK_EMPTY State.");
+      if (!isAlarmOn()) {
+        SepticLCD.setDisplayMessage("Tank Empty");
+      }
+      break;
     case PS_OFF:
+      Logln("Entered PS_OFF State.");
       if (!isAlarmOn()) {
         SepticLCD.setDisplayMessage("Idle");
-        SepticLCD.setBacklightColor(COLOR_IDLE);
       }
       break;
     case PS_OFF_A:
-      Println("Entered PS_OFF_A");
+      Logln("Entered PS_OFF_A State.");
       if (!isAlarmOn() && force) {
         SepticLCD.setDisplayMessage("Idle");
-        SepticLCD.setBacklightColor(COLOR_IDLE);
       }
       break;
     case PS_MANUAL_ON:
-      Println("Entered PS_MANUAL_ON");
+      Logln("Entered PS_MANUAL_ON State.");
       if (!isAlarmOn()) {
         SepticLCD.setDisplayMessage("Manual Pump On");
-        SepticLCD.setBacklightColor(COLOR_PUMPING);
       }
       break;
     case PS_MANUAL_ON_A:
-      Println("Entered PS_MANUAL_ON_A");
+      Logln("Entered PS_MANUAL_ON_A State.");
       if (!isAlarmOn() && force) {
         SepticLCD.setDisplayMessage("Manual Pump On");
-        SepticLCD.setBacklightColor(COLOR_PUMPING);
       }
       break;
     case PS_AUTO_ON:
-      Println("Entered PS_AUTO_ON");
+      Logln("Entered PS_AUTO_ON State.");
       if (!isAlarmOn()) {
         SepticLCD.setDisplayMessage("Auto Pump On");
-        SepticLCD.setBacklightColor(COLOR_PUMPING);
       }
       break;
     case PS_OVER_ON:
-      Println("Entered PS_OVER_ON");
+      Logln("Entered PS_OVER_ON State.");
       if (!isAlarmOn()) {
         SepticLCD.setDisplayMessage("Override Pump On");
-        SepticLCD.setBacklightColor(COLOR_PUMPING);
-      }
-      break;
-    case PS_ALARM_ON:
-      Println("Entered PS_ALARM_ON");
-      if (!isAlarmOn()) {
-        SepticLCD.setDisplayMessage("Alarm Pump On");
-        SepticLCD.setBacklightColor(COLOR_PUMPING);
       }
       break;
     default:
@@ -233,7 +234,6 @@ void setup() {
   // MQTT setup
   mqtt.setOptions(15*60, true, 5000);                 // keep Alive, Clean Session, Timeout
   mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);
-  mqtt.onMessageAdvanced(messageReceived);
   
   #ifdef ENABLE_WATCHDOG
   // Set up the generic clock (GCLK2) used to clock the watchdog timer at 1.024kHz
@@ -267,21 +267,21 @@ void setup() {
 
 // Arduino loop function
 void loop() {
-  static uint32_t lastTempPublish = 0 - TEMP_PUBLISH_RATE;  // used to publish the temp at a defined rate
-  static uint32_t lastRSSIPublish = 0 - TEMP_PUBLISH_RATE;  // used to publish the RSSI at a defined rate
+  static uint32_t nextTempPublish = 0;                // used to publish the temp at a defined rate
+  static uint32_t nextRSSIPublish = 0;                // used to publish the RSSI at a defined rate
   static uint32_t lastDebounceTime[NUMBER_INPUTS] = {0, 0, 0, 0, 0, 0};
-  static uint8_t  lastDebounceInput[NUMBER_INPUTS] = {-1, -1, -1, -1, -1, -1};
+  static int8_t   lastDebounceInput[NUMBER_INPUTS] = {-1, -1, -1, -1, -1, -1};
   static uint32_t lastPSDeadbandTime;                 // add a deadband between pump state changes
   static uint32_t lastASDeadbandTime;                 // add a deadband between alarm state changes
-  static uint32_t lastPumpOnTime = 0 - 4 * 60 * 60 * 1000;  // last pump time was 4 hours ago.
-  static uint32_t startManualOnTime = 0;              // start time of Manual Pump On 
-  static bool     publishPumpStatus = false;          // when true pump status should be published to MQTT server
-  static bool     publishAlarmStatus = false;         // when true alarm status should be published to MQTT server
+  static uint8_t  lastEffluentPumpSense = -1;         // last sensed effuent pump state
+  static uint32_t lastPumpOnStartTime = 0;                 // last pump on time was now.
+  static uint32_t lastPumpOffStartTime = 0 - 4*60*60*1000; // last pump off start time was 4 hours ago.
+  static bool     publishPumpState = true;            // when true pump status should be published to MQTT server
+  static bool     publishAlarmState = true;           // when true alarm status should be published to MQTT server
+  static bool     publishSepticStatus = true;         // when true septic status should be published to MQTT server
   PumpStateEnum   nextPumpState = curPumpState;       // next state for pump state machine, default is no change
   AlarmStateEnum  nextAlarmState = curAlarmState;     // next state for alarm state machine, default is no change
-  uint32_t        lastPumpOnDiff;                     // how long has it been since pump was last on
-  uint16_t        curHour = WiFiRTC.getHours();       // last hour this loop had
-  uint8_t         curMinute = WiFiRTC.getMinutes();   // last minute this loop had
+  uint32_t        timeDiff;                           // how long has it been since pump was last on
   float           temperature;                        // temperature reading
   char            tempStr[16];                        // temporary string
   uint8_t         inputReading;                       // last input read
@@ -293,6 +293,8 @@ void loop() {
   // keep track of time appropriately
   WiFiRTC.loop();
 
+  //Print('.');
+  
   #ifdef ENABLE_OTA_UPDATES
   // check for WiFi OTA updates
   WiFiOTA.poll();
@@ -351,6 +353,18 @@ void loop() {
     }
   }
   
+  // handle LCD background color
+  if (curAlarmState != AS_OFF) {
+    // alarm is on
+    SepticLCD.setBacklightColor(COLOR_ALARM);
+  } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
+    // pump is on
+    SepticLCD.setBacklightColor(COLOR_PUMPING);
+  } else {
+    // idle
+    SepticLCD.setBacklightColor(COLOR_IDLE);
+  }
+
   // if inputs are stabilized then check inputs as normal
   if (inputStabilized) {
     // handle Alarm State changing states
@@ -358,27 +372,27 @@ void loop() {
       switch (curAlarmState) {
         case AS_OFF:
           // just entered Alarm Off state
-          Println("Entered AS_OFF");
+          Logln("Entered AS_OFF State.");
           displayPumpState(true);
           digitalWrite(ALARM_LED, LOW);
           break;
         case AS_TANK_HIGH:
           // just entered Float Alarm state
-          Println("Entered AS_TANK_HIGH");
+          Logln("Entered AS_TANK_HIGH State.");
           SepticLCD.setDisplayMessage("Tank High Alarm");
           SepticLCD.setBacklightColor(COLOR_ALARM);
           digitalWrite(ALARM_LED, HIGH);
           break;
         case AS_AIR_PUMP:
           // just entered Air Pump Alarm state
-          Println("Entered AS_AIR_PUMP");
+          Logln("Entered AS_AIR_PUMP State.");
           SepticLCD.setDisplayMessage("Air Pump Alarm");
           SepticLCD.setBacklightColor(COLOR_ALARM);
           digitalWrite(ALARM_LED, HIGH);
           break;
         case AS_BLEACH_LEVEL:
           // just entered Bleach Alarm state
-          Println("Entered AS_BLEACH_LEVEL");
+          Logln("Entered AS_BLEACH_LEVEL State.");
           SepticLCD.setDisplayMessage("Bleach Alarm");
           SepticLCD.setBacklightColor(COLOR_ALARM);
           digitalWrite(ALARM_LED, HIGH);
@@ -386,7 +400,8 @@ void loop() {
       }
     
       // Alarm State changed so time to publish
-      publishAlarmStatus = true;
+      publishSepticStatus = true;
+      publishAlarmState = true;
 
       // last Alarm State is now current Alarm State
       lastAlarmState = curAlarmState;
@@ -505,10 +520,10 @@ void loop() {
       // update display based on Pump State
       displayPumpState(false);
     
-      // Pump State changed so time to publish
+      // Pump State changed so time to publish septic status
       if (curPumpState != PS_OFF_A &&
           curPumpState != PS_MANUAL_ON_A) {
-        publishPumpStatus = true;
+        publishSepticStatus = true;
       }
       
       // last Pump State is now current Pump State
@@ -518,33 +533,46 @@ void loop() {
     // handle Pump State Machine
     switch (curPumpState) {
       case PS_RESET:
-        // we are in reset state and effluent pump relay is off
-        if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-          // the high level alarm occurred while pumping
-          nextPumpState = PS_ALARM_ON;                // switch to Alarm Pump State
+        // we are in reset state
+        if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
+          // override float/pump came on
           lastPSDeadbandTime = millis();              // start a new deadband time
-        } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
-          // we are in override pump on state
           nextPumpState = PS_OVER_ON;                 // switch to Override Pump State
-          lastPSDeadbandTime = millis();              // start a new deadband time
         } else {
           // we are in pump off state
-          nextPumpState = PS_OFF;                     // switch to Pump Off State
           lastPSDeadbandTime = millis();              // start a new deadband time
+          nextPumpState = PS_OFF;                     // switch to Pump Off State
         }
         break;
-     case PS_OFF:
-       // Effluent Pump is in Pump Off state, waiting for Pump Toggle Switch to release
+      case PS_TANK_EMPTY:
+        // we are in the tank went empty while pumping
+        digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_INACTIVE); // force effluent pump off
+        if (millis() - lastPSDeadbandTime >= 5 * 1000) {
+          // delay time has elapsed
+          // do not reset deadband time so Pump Off state won't wait for a new deadband time
+          lastPumpOffStartTime = millis();            // new beginning of off time
+          nextPumpState = PS_OFF;                     // switch to Pump Off State
+        } else if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
+          // normal deadband time has elapsed, look for pump toggle
+          if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_ACTIVE) {
+            // the pump toggle switch was pressed
+            lastPSDeadbandTime = millis();              // start a new deadband time
+            lastPumpOnStartTime = millis();             // new beginning of pump on time
+            nextTempPublish = millis();                 // force temperature publish now
+            nextPumpState = PS_MANUAL_ON;               // switch to Manual On State
+          }
+        }
+        break;
+      case PS_OFF:
+        // Effluent Pump is in Pump Off state, waiting for Pump Toggle Switch to release
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_INACTIVE); // force effluent pump off
         if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
-          if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-            // the high level alarm occurred while pumping
-            nextPumpState = PS_ALARM_ON;              // switch to Alarm Pump State
+          if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
+            // override float/pump came on
             lastPSDeadbandTime = millis();            // start a new deadband time
-          } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
-            // override pump on just occurred
+            lastPumpOnStartTime = millis();           // new beginning of pump on time
+            nextTempPublish = millis();               // force temperature publish now
             nextPumpState = PS_OVER_ON;               // switch to Override Pump State
-            lastPSDeadbandTime = millis();            // start a new deadband time
           } else if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_INACTIVE) {
             // the pump toggle switch was released
             nextPumpState = PS_OFF_A;                 // switch to Pump Off A State
@@ -554,42 +582,37 @@ void loop() {
       case PS_OFF_A:
         // Effluent Pump is in Pump Off state
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_INACTIVE); // force effluent pump off
-        // get how long it has been since effluent pump was turned on
-        lastPumpOnDiff = millis() - lastPumpOnTime;
+        // get how long has effluent pump been off
+        timeDiff = millis() - lastPumpOffStartTime;
         // deadband time has elapsed so we can change states now
-        if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-          // the high level alarm occurred while pumping
-          nextPumpState = PS_ALARM_ON;                // switch to Alarm Pump State
+        if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_ACTIVE) {
+          // manual pump on because the pump toggle switch was pressed
           lastPSDeadbandTime = millis();              // start a new deadband time
-        } else if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_ACTIVE) {
-          // manual turn on of pump
+          lastPumpOnStartTime = millis();             // new beginning of pump on time
+          nextTempPublish = millis();                 // force temperature publish now
           nextPumpState = PS_MANUAL_ON;               // switch to Manual Pump State
-          lastPSDeadbandTime = millis();              // start a new deadband time
-          startManualOnTime = lastPSDeadbandTime;     // Pump Manual On start time
         } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
-          // override pump on just occurred
+          // override float/pump came on
+          lastPSDeadbandTime = millis();              // start a new deadband time
+          lastPumpOnStartTime = millis();             // new beginning of pump on time
+          nextTempPublish = millis();                 // force temperature publish now
           nextPumpState = PS_OVER_ON;                 // switch to Override Pump State
+        } else if ((WiFiRTC.getHour() >= 1 && WiFiRTC.getHour() < 4 &&
+                    timeDiff > 4 * 60 * 60 * 1000) || 
+                    timeDiff > 24 * 60 * 60 * 1000) {
+          // time is between 1:00AM and 4:00AM and last time pump was on > 4 hours or
+          // last time the pump was on > 24 hours
           lastPSDeadbandTime = millis();              // start a new deadband time
-        } else if ((lastPumpOnDiff > 3 * 60 * 60 * 1000 &&
-                    curHour > 1 && curHour < 4) || 
-                    lastPumpOnDiff > 24 * 60 * 60 * 1000) {
-          // last time the pump was on was more than 3 hours ago and
-          // time is between 1:00AM and 4:00AM or
-          // last time the pump was on was more than 24 hours ago
+          lastPumpOnStartTime = millis();             // new beginning of pump on time
+          nextTempPublish = millis();                 // force temperature publish now
           nextPumpState = PS_AUTO_ON;                 // switch to Automatic Pump On State
-          lastPSDeadbandTime = millis();              // start a new deadband time
         }
         break;
       case PS_MANUAL_ON:
         // Effluent Pump is in Manual Pump state
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        lastPumpOnTime = millis();                    // pump is still on
         if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
-          if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-            // the high level alarm occurred while pumping
-            nextPumpState = PS_ALARM_ON;              // switch to Alarm Pump State
-            lastPSDeadbandTime = millis();            // start a new deadband time
-          } else if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_INACTIVE) {
+          if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_INACTIVE) {
             // the pump toggle switch was released
             nextPumpState = PS_MANUAL_ON_A;           // switch to Pump Manual ON A
           }
@@ -598,74 +621,56 @@ void loop() {
       case PS_MANUAL_ON_A:
         // Effluent Pump is in Manual Pump state and Pump Toggle Switch was released
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        lastPumpOnTime = millis();                    // pump is still on
+        // get how long has effluent pump been on
+        timeDiff = millis() - lastPumpOnStartTime;
         // deadband time has elapsed so we can change states now
-        if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-          // the high level alarm occurred while pumping
-          nextPumpState = PS_ALARM_ON;                // switch to Alarm Pump State
+        if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
+          // the effluent pump shut itself off due to low level float
           lastPSDeadbandTime = millis();              // start a new deadband time
-        } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
-          // the pump shut itself off due to low level float
-          nextPumpState = PS_OFF;                     // switch to Pump Off State
-          lastPSDeadbandTime = millis();              // start a new deadband time
+          lastPumpOffStartTime = millis();            // new beginning of pump off time
+          nextPumpState = PS_TANK_EMPTY;              // switch to Tank Empty State
         } else if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_ACTIVE) {
-          // Pump Toggle Switch we pressed again, time to switch off
-          nextPumpState = PS_OFF;                     // switch to Pump Off State
+          // Pump Toggle Switch was pressed again, time to switch off
           lastPSDeadbandTime = millis();              // start a new deadband time
-        } else if (millis() - startManualOnTime > 30 * 60 * 1000) {
-          // Manual On time too long
+          lastPumpOffStartTime = millis();            // new beginning of pump off time
           nextPumpState = PS_OFF;                     // switch to Pump Off State
+        } else if (timeDiff > 30 * 60 * 1000) {
+          // Manual On time long enough (30 minutes)
           lastPSDeadbandTime = millis();              // start a new deadband time
+          lastPumpOffStartTime = millis();            // new beginning of pump off time
+          nextPumpState = PS_OFF;                     // switch to Pump Off State
         }
         break;
       case PS_AUTO_ON:
         // Effluent Pump is in Automatic Pump state
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        lastPumpOnTime = millis();                    // pump is still on
+        // get how long has effluent pump been on
+        timeDiff = millis() - lastPumpOnStartTime;
         if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
           // deadband time has elapsed so we can change states now
-          if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-            // the high level alarm occurred while pumping
-            nextPumpState = PS_ALARM_ON;              // switch to Alarm Pump State
+          if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
+            // the effluent pump shut itself off due to low level float
             lastPSDeadbandTime = millis();            // start a new deadband time
-          } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
-            // the pump shut itself off due to low level float
+            lastPumpOffStartTime = millis();          // new beginning of off time
+            nextPumpState = PS_TANK_EMPTY;            // switch to Tank Empty State
+          } else if (timeDiff > 3 * 60 * 60 * 1000) {
+            // Auto On time too long (more than 3 hours)
+            lastPSDeadbandTime = millis();            // start a new deadband time
+            lastPumpOffStartTime = millis();          // new beginning of off time
             nextPumpState = PS_OFF;                   // switch to Pump Off State
-            lastPSDeadbandTime = millis();            // start a new deadband time
           }
         }
         break;
       case PS_OVER_ON:
         // Effluent Pump is in Override Pump state
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        lastPumpOnTime = millis();                    // pump is still on
         if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
           // deadband time has elapsed so we can change states now
-          if (inputState[FLOAT_ALARM] == ALARM_ACTIVE) {
-            // the tank high level alarm occurred while pumping
-            nextPumpState = PS_ALARM_ON;              // switch to Alarm Pump State
-            lastPSDeadbandTime = millis();            // start a new deadband time
-          } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
+          if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
             // the pump shut itself off due to low level float
-            nextPumpState = PS_OFF;                   // switch to Pump Off State
             lastPSDeadbandTime = millis();            // start a new deadband time
-          }
-        }
-        break;
-      case PS_ALARM_ON:
-        // Effluent Pump is in Alarm Pump state
-        digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        lastPumpOnTime = millis();                    // pump is still on
-        if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
-          // deadband time has elapsed so we can change states now
-          if (inputState[FLOAT_ALARM] == ALARM_INACTIVE) {
-            // the pump shut itself off due to low level float
-            nextPumpState = PS_OFF;
-            lastPSDeadbandTime = millis();            // start a new deadband time
-          } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
-            // the pump shut itself off due to low level float
-            nextPumpState = PS_OFF;
-            lastPSDeadbandTime = millis();            // start a new deadband time
+            lastPumpOffStartTime = millis();          // new beginning of pump off time
+            nextPumpState = PS_TANK_EMPTY;            // switch to Tank Empty State
           }
         }
         break;
@@ -673,7 +678,7 @@ void loop() {
         // unknown state, force back to reset state
         nextPumpState = PS_RESET;
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_INACTIVE); // force effluent pump off
-        Print("Unknown Pump State: "); Println(curPumpState);
+        Log("Unknown Pump State: "); Println(curPumpState);
         break;
     }
     
@@ -687,142 +692,200 @@ void loop() {
   // Check connections
   if (!connect()) {
     // we are not currently connected, ignore rest of loop to prevent MQTT publishing
+    publishSepticStatus = true;                         // force septic state publish when MQTT comes back on
+    publishPumpState = true;                            // force pump state publish when MQTT comes back on
+    publishAlarmState = true;                           // force alarm state publish when MQTT comes back on
     return;
   }
 
-  if (publishAlarmStatus) {
-    // update display based on alarm state
-    switch (curAlarmState) {
-      case AS_OFF:
-        if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "Off", true, 1)) {
-          Println("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Off' topic value");
-          publishAlarmStatus = false;                 // won't need to publish again
-        } else {
-          Println("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Off' topic value");
-        }
-        break;
-      case AS_TANK_HIGH:
-        if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "Tank High Alarm", true, 1)) {
-          Println("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Tank High Alarm' topic value");
-          publishAlarmStatus = false;                 // won't need to publish again
-        } else {
-          Println("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Tank High Alarm' topic value");
-        }
-        break;
-      case AS_AIR_PUMP:
-        if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "Air Pump Alarm", true, 1)) {
-          Println("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Air Pump Alarm' topic value");
-          publishAlarmStatus = false;                 // won't need to publish again
-        } else {
-          Println("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Air Pump Alarm' topic value");
-        }
-        break;
-      case AS_BLEACH_LEVEL:
-        if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "Bleach Alarm", true, 1)) {
-          Println("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Bleach Alarm' topic value");
-          publishAlarmStatus = false;                 // won't need to publish again
-        } else {
-          Println("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'Bleach Alarm' topic value");
-        }
-        break;
-      default:
-        break;
-    }
+  // handle pump state changing
+  if (lastEffluentPumpSense != inputState[EFFLUENT_PUMP_SENSE]) {
+    publishPumpState = true;
+    
+    // current state is now last state
+    lastEffluentPumpSense = inputState[EFFLUENT_PUMP_SENSE];
   }
   
-  // if inputs are stabilized handle pump state publish
-  if (inputStabilized && publishPumpStatus) {
-    // publish with no force update
-    switch (curPumpState) {
-      case PS_OFF:
-        if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "Off", false, 1)) {
-          Println("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Off' topic value");
-          publishPumpStatus = false;
-        } else {
-          Println("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Off' topic value");
-        }
-        break;
-      case PS_MANUAL_ON:
-        if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "Manual On", false, 1)) {
-          Println("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Manual On' topic value");
-          publishPumpStatus = false;
-        } else {
-          Println("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Manual On' topic value");
-        }
-        break;
-      case PS_AUTO_ON:
-        if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "Auto On", false, 1)) {
-          Println("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Auto On' topic value");
-          publishPumpStatus = false;
-        } else {
-          Println("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Auto On' topic value");
-        }
-        break;
-      case PS_OVER_ON:
-        if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "Override On", false, 1)) {
-          Println("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Override On' topic value");
-          publishPumpStatus = false;
-        } else {
-          Println("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Override On' topic value");
-        }
-        break;
-      case PS_ALARM_ON:
-        if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "Alarm On", false, 1)) {
-          Println("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Alarm On' topic value");
-          publishPumpStatus = false;
-        } else {
-          Println("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'Alarm On' topic value");
-        }
-        break;
+  //  publish pump state
+  if (inputStabilized && publishPumpState) {
+    if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
+      // pump is on
+      if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "ON", true, 1)) {
+        Logln("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+        publishPumpState = false;
+      } else {
+        Logln("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+      }
+    } else {
+      // pump is off
+      if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "OFF", true, 1)) {
+        Logln("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+        publishPumpState = false;
+      } else {
+        Logln("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+      }
+    }
+  }
+
+  // publish septic status
+  if (inputStabilized && publishSepticStatus) {
+    if (curAlarmState != AS_OFF) {
+      // alarm is on
+      switch (curAlarmState) {
+        case AS_TANK_HIGH:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Tank High Alarm On", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank High Alarm On' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank High Alarm On' topic value");
+          }
+          break;
+        case AS_AIR_PUMP:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Air Pump Alarm On", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Air Pump Alarm On' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Air Pump Alarm On' topic value");
+          }
+          break;
+        case AS_BLEACH_LEVEL:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Bleach Alarm On", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Bleach Alarm On' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Bleach Alarm On' topic value");
+          }
+          break;
+        default:
+          publishSepticStatus = false;
+          break;
+      }
+    } else {
+      // alarm is off so display pump status
+      switch (curPumpState) {
+        case PS_OFF:
+        case PS_OFF_A:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Idle", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Idle' topic value");
+            publishSepticStatus = false;
+          } else {  
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Idle' topic value");
+          }
+          break;
+        case PS_TANK_EMPTY:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Tank Empty", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank Empty' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank Empty' topic value");
+          }
+          break;
+        case PS_MANUAL_ON:
+        case PS_MANUAL_ON_A:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Manual Pump On", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Manual Pump On' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Manual Pump On' topic value");
+          }
+          break;
+        case PS_AUTO_ON:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Auto Pump On", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Auto Pump On' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Auto Pump On' topic value");
+          }
+          break;
+        case PS_OVER_ON:
+          if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Override Pump On", true, 1)) {
+            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Override Pump On' topic value");
+            publishSepticStatus = false;
+          } else {
+            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Override Pump On' topic value");
+          }
+          break;
+        default:
+          publishSepticStatus = false;
+          break;
+      }
+    }
+  }
+
+  // publish alarm state
+  if (inputStabilized && publishAlarmState) {
+    // update display based on alarm state
+    if (curAlarmState == AS_OFF) {
+      // alarm is currently off
+      if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "OFF", true, 1)) {
+        Logln("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+        publishAlarmState = false;
+      } else {
+        Logln("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+      }
+    } else {
+      // alarm is currently on
+      if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "ON", true, 1)) {
+        Logln("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+        publishAlarmState = false;
+      } else {
+        Logln("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+      }
     }
   }
 
   // is it time to temperature sensor values?
   temperature = SepticLCD.getTemperatureC();          // retrieve the temperature
   if (temperature > -100.0) {
+    uint32_t publishRate = TEMP_PUBLISH_RATE;
+    if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
+      publishRate = TEMP_PUMP_ON_PUBLISH_RATE;
+    }
     // there is a valid temperature
-    if ((millis() - lastTempPublish) > TEMP_PUBLISH_RATE) {
-      // it has been long enough since last publish
+    if (millis() >= nextTempPublish) {
+      // it has been long enough since last temperature publish
       dtostrf(temperature, 1, 1, tempStr);            // convert temperature to string
       // publish the most recent temperture
       if (mqtt.publish(HASS_TEMP_STATE_TOPIC, tempStr, false, 1)) {
-/*        Print("Published '" HASS_TEMP_STATE_TOPIC "' MQTT topic, '");
+        /*Log("Published '" HASS_TEMP_STATE_TOPIC "' MQTT topic, '");
         Print(tempStr);
-        Println("' topic value");
-*/      } else {
-        Print("Failed to publish '" HASS_TEMP_STATE_TOPIC "' MQTT topic, '");
+        Println("' topic value");*/
+      } else {
+        Log("Failed to publish '" HASS_TEMP_STATE_TOPIC "' MQTT topic, '");
         Print(tempStr);
         Println("' topic value");
       }
-      lastTempPublish += TEMP_PUBLISH_RATE;           // prepare for next publish time
+      
+      nextTempPublish += publishRate;                 // prepare for next publish time
     }
   }
   // is it time to RSSI sensor values?
-  if ((millis() - lastRSSIPublish) > TEMP_PUBLISH_RATE) {
+  if (millis() >= nextRSSIPublish) {
     itoa(WiFi.RSSI(), tempStr, 10);
     // publish the RSSI too
     if (mqtt.publish(HASS_RSSI_STATE_TOPIC, tempStr, false, 1)) {
-/*      Print("Published '" HASS_RSSI_STATE_TOPIC "' MQTT topic, '");
+      /*Log("Published '" HASS_RSSI_STATE_TOPIC "' MQTT topic, '");
       Print(tempStr);
-      Println("' topic value");
-*/    } else {
-      Print("Failed to publish '" HASS_RSSI_STATE_TOPIC "' MQTT topic, '");
+      Println("' topic value");*/
+    } else {
+      Log("Failed to publish '" HASS_RSSI_STATE_TOPIC "' MQTT topic, '");
       Print(tempStr);
       Println("' topic value");
     }
-    lastRSSIPublish += TEMP_PUBLISH_RATE;             // prepare for next publish time
+    nextRSSIPublish += TEMP_PUBLISH_RATE;             // prepare for next publish time
   }
 }
 
 // Verify/Make connections
 bool connect() {
-  byte mac[6];
-  IPAddress ip;
+  static uint32_t lastMQTTRetryTime = millis() - 10 * 1000;
+  byte            mac[6];
+  IPAddress       ip;
 
   if (WiFi.status() != WL_CONNECTED) {
     // Wifi is disconnected
     wifiDisconnectOccurred = true;                    // keep track of the fact we were disconnected
-    return false;                                     // return with not connected
+    return false;                                     // indicate there is a problem
   }
   if (wifiDisconnectOccurred && (WiFi.status() == WL_CONNECTED)) {
     // WiFi is connected and previously we were disconnected
@@ -861,138 +924,102 @@ bool connect() {
     Println("WiFi OTA updates enabled");
     #endif
     #endif
-  } 
+    Println();
+  }
   
   if (!mqtt.connected()) {
     // we are not currently connected to MQTT Server
-    Print("Connecting to MQTT Server:" MQTT_SERVER "...");
+    if (millis() - lastMQTTRetryTime <= 10 * 1000) {
+      // not time to retry MQTT connection
+      return false;
+    }
+    // time to retry server connection
+    Log("Connecting to MQTT Server:" MQTT_SERVER "...");
     if (mqtt.connect(BOARD_NAME, MQTT_USERNAME, MQTT_PASSWORD)) {
       // successfully connected to MQTT server
       Println("Success");
     } else {
       // failed to connect to MQTT server
       Println("Failed");
-      printWiFiStatus(true);
+      lastMQTTRetryTime = millis();
       return false;
     }
     
     if (!mqtt.publish(HASS_TEMP_CONFIG_TOPIC, HASS_TEMP_CONFIG, true, 1)) {
-      Println("  Failed to publish '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic");
+      Logln("Failed to publish '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic");
     } else {
-      Println("  Published '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic, '" HASS_TEMP_CONFIG "' topic value");
+      Logln("Published '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic, '" HASS_TEMP_CONFIG "' topic value");
     }
     
     // Publish Home Assistant RSSI config topic
     if (!mqtt.publish(HASS_RSSI_CONFIG_TOPIC, HASS_RSSI_CONFIG, true, 1)) {
-      Println("  Failed to publish '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic");
+      Logln("Failed to publish '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic");
     } else {
-      Println("  Published '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic, '" HASS_RSSI_CONFIG "' topic value");
+      Logln("Published '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic, '" HASS_RSSI_CONFIG "' topic value");
     }
     
     // Publish Home Assistant pump config topic
     if (!mqtt.publish(HASS_PUMP_CONFIG_TOPIC, HASS_PUMP_CONFIG, true, 1)) {
-      Println("  Failed to publish '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic");
+      Logln("Failed to publish '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic");
     } else {
-      Println("  Published '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic, '" HASS_PUMP_CONFIG "' topic value");
+      Logln("Published '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic, '" HASS_PUMP_CONFIG "' topic value");
     }
     
     // Publish Home Assistant alarm config topic
     if (!mqtt.publish(HASS_ALARM_CONFIG_TOPIC, HASS_ALARM_CONFIG, true, 1)) {
-      Println("  Failed to publish '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic");
+      Logln("Failed to publish '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic");
     } else {
-      Println("  Published '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic, '" HASS_ALARM_CONFIG "' topic value");
+      Logln("Published '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic, '" HASS_ALARM_CONFIG "' topic value");
     }
     
     // Publish Home Assistant pump status config topic
     if (!mqtt.publish(HASS_STATUS_CONFIG_TOPIC, HASS_STATUS_CONFIG, true, 1)) {
-      Println("  Failed to publish '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic");
+      Logln("Failed to publish '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic");
     } else {
-      Println("  Published '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic, '" HASS_STATUS_CONFIG "' topic value");
+      Logln("Published '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic, '" HASS_STATUS_CONFIG "' topic value");
     }
     
     if (resetOccurred) {                              // Hardware reset occurred
       // reset just recently occurred
       if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset Hardware", true, 1)) {
-        Println("  Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset Hardware' topic value");
+        Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset Hardware' topic value");
       } else {
-        Println("  Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset Hardware' topic value");
+        Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset Hardware' topic value");
       }
     } else if (wifiConnectOccurred) {                 // WiFi Connected
       // Wifi just connected
       if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset WiFi Connect", true, 1)) {
-        Println("  Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
+        Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
       } else {
-        Println("  Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
+        Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
       }
-    } else if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset MQTT Connect", true, 1)) {
-      // since no reset or WiFi connect occurred then it was a MQTT Connect
-      Println("  Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'ResetMQTT Connect' topic value");
     } else {
-      Println("  Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset MQTT Connect' topic value");
+      // MQTT just connected
+      if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset MQTT Connect", true, 1)) {
+        // since no reset or WiFi connect occurred then it was a MQTT Connect
+        Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'ResetMQTT Connect' topic value");
+      } else {
+        Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset MQTT Connect' topic value");
+      }
     }
-
-    // wait a bit before updating HASS_STATUS_STATE_TOPIC again
-    delay(100);
+    
+    // Home Assistant will ignore too frequent publishing on topics
+    // Specifically we want HASS_STATUS_STATE_TOPIC to show the Reset events above and the soon to come Idle
+    delay(500);
     
     // clear the connect reason flags
     resetOccurred = false;
     wifiConnectOccurred = false;
-    if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Idle", true, 1)) {
-      // since no reset or WiFi connect occurred then it was a MQTT Connect
-      Println("  Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Idle' topic value");
-    } else {
-      Println("  Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Idle' topic value");
-    }
-    Println("WiFi Septic Controller is ready!\n");
+    
+    // we had to reconnect to MQTT Broker make sure at least one false is returned
+    return false;
   }
-
+  
+  // be ready for next MQTT retry time
+  lastMQTTRetryTime = millis();
+  
   // if we got here then we were successfull
   return true;
-}
-
-// MQTT subscribed message received
-void messageReceived(MQTTClient *client, char topic[], char payload[], int payload_length) {
-/*  if (strcmp(topic, HASS_GATE_COMMAND_TOPIC) == 0) {
-    // gate command has been received
-    if (outputDeadband == LOW) {
-      // no other output is in progress
-      if (strcmp(payload, "OPEN") == 0) {             // time to OPEN the gate
-        digitalWrite(output_pins[OPEN_BUTTON], HIGH); // make OPEN Button active
-        outputState[OPEN_BUTTON] = HIGH;              // indicate to loop() that OPEN Button output is active
-        lastOutputTime[OPEN_BUTTON] = millis();       // start the timer used to cancel output
-        outputDeadband = HIGH;                        // contact closure in progress no other contact closures can occur
-        lastOutputDeadbandTime = lastOutputTime[OPEN_BUTTON]; // start a timer for deadband timeout
-        digitalWrite(BOARD_LED, HIGH);                // visual indication that an output is active
-        Println("Accepted 'OPEN' MQTT Command");
-      } else if (strcmp(payload, "CLOSE") == 0) {     // time to CLOSE the gate
-        digitalWrite(output_pins[CLOSE_BUTTON], HIGH);// make CLOSE Button active
-        outputState[CLOSE_BUTTON] = HIGH;             // indicate to loop() that CLOSE Button output is active
-        lastOutputTime[CLOSE_BUTTON] = millis();      // start the timer used to cancel output
-        outputDeadband = HIGH;                        // contact closure in progress no other contact closures can occur
-        lastOutputDeadbandTime = lastOutputTime[CLOSE_BUTTON]; // start a timer for deadband timeout
-        digitalWrite(BOARD_LED, HIGH);                // visual indication that an output is active
-        Println("Accepted 'CLOSE' MQTT Command");
-     } else if (strcmp(payload, "STOP") == 0) {      // time to TOGGLE the gate
-        digitalWrite(output_pins[TOGGLE_BUTTON], HIGH); // make TOGGLE Button active
-        outputState[TOGGLE_BUTTON] = HIGH;            // indicate to loop() that TOGGLE Button output is active
-        lastOutputTime[TOGGLE_BUTTON] = millis();     // start the timer used to cancel output
-        outputDeadband = HIGH;                        // contact closure in progress no other contact closures can occur
-        lastOutputDeadbandTime = lastOutputTime[TOGGLE_BUTTON]; // start a timer for deadband timeout
-        digitalWrite(BOARD_LED, HIGH);                // visual indication that an output is active
-        Println("Accepted 'STOP' MQTT Command");
-      }
-    } else {
-      // another output is in progress so we ignore this command
-      if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Ignored MQTT Command", true, 1)) {
-        Println("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic");
-      } else {
-        Println("  Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Ignored MQTT Command' topic value");
-      }
-      Print("Ignored '");
-      Print(payload);
-      Println("' MQTT Command");
-    }
-  }*/
 }
 
 // Reset the watchdog timer
@@ -1000,29 +1027,5 @@ inline void watchdogReset(void) {
   #ifdef ENABLE_WATCHDOG
   if (!WDT->STATUS.bit.SYNCBUSY)                // Check if the WDT registers are synchronized
     REG_WDT_CLEAR = WDT_CLEAR_CLEAR_KEY;        // Clear the watchdog timer
-  #endif
-}
-
-// Prints current WiFi Status and RSSI
-void printWiFiStatus(bool withLF) {
-  #ifdef ENABLE_SERIAL
-  Print("Status: ");
-  switch (WiFi.status()) {
-    case WL_NO_SHIELD: Print("No Shield"); break;
-    case WL_IDLE_STATUS: Print("Idle Status"); break;
-    case WL_NO_SSID_AVAIL: Print("No SSID Available"); break;
-    case WL_SCAN_COMPLETED: Print("Scan Completed"); break;
-    case WL_CONNECTED: Print("Connected"); break;
-    case WL_CONNECT_FAILED: Print("Connect Failed"); break;
-    case WL_CONNECTION_LOST: Print("Connection Lost"); break;
-    case WL_DISCONNECTED: Print("Disconnected"); break;
-  }
-  Print(", RSSI: ");
-  Print(WiFi.RSSI());
-  Print("dBm");
-  if (withLF)
-    Println(".");
-  else
-    Print(", ");
   #endif
 }

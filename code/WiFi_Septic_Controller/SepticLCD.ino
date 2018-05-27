@@ -68,12 +68,13 @@ void SepticLCDClass::begin(void) {
  * Keep things up to date
  ******************************************************************/
 void SepticLCDClass::loop(void) {
+  
   static uint16_t lastHour = 100;                     // last hour this loop had
   static uint8_t lastMinute = 100;                    // last minute this loop had
   static uint8_t lastSecond = 100;                    // last second this loop had
-  uint16_t curHour = WiFiRTC.getHours();              // current hour
-  uint16_t curMinute = WiFiRTC.getMinutes();          // current minutes
-  uint8_t curSecond = WiFiRTC.getSeconds();           // current second
+  uint16_t curHour = WiFiRTC.getHour();               // current hour
+  uint16_t curMinute = WiFiRTC.getMinute();           // current minutes
+  uint8_t curSecond = WiFiRTC.getSecond();            // current second
   char tempStr[16] = "";                              // temporary string
 
   if (!_configured) {                                 // do nothing if not configured
@@ -98,7 +99,7 @@ void SepticLCDClass::loop(void) {
   }
 
   // check for changes in time, will occur every minute
-  if (lastHour != WiFiRTC.getHours() || lastMinute != WiFiRTC.getMinutes()) {
+  if (lastHour != curHour || lastMinute != curMinute) {
     // time needs to be updated
     updateTime();                                     // update time in row strings
     update = true;                                    // display has been changed
@@ -161,7 +162,7 @@ void SepticLCDClass::setBacklightColor(uint8_t r, uint8_t g, uint8_t b) {
 void SepticLCDClass::setBacklightColor(uint8_t color) {
   switch (color) {
     case COLOR_PUMPING:
-      setBacklightColor(255, 255, 255); // blue
+      setBacklightColor(0, 0, 255); // blue
       break;
     case COLOR_ALARM:
       setBacklightColor(255, 0, 0);     // red
@@ -178,7 +179,7 @@ void SepticLCDClass::setBacklightColor(uint8_t color) {
 /******************************************************************
  * Sets the current display message
  ******************************************************************/
-void SepticLCDClass::setDisplayMessage(char* msg) {
+void SepticLCDClass::setDisplayMessage(const char* msg) {
   // keep a copy the new string
   strncpy(_message, msg, sizeof(_message));
   updateMessage();          // update the message on row strings
@@ -202,7 +203,7 @@ void SepticLCDClass::updateDisplay() {
 void SepticLCDClass::updateTime() {
   char timeStr[8];
   
-  WiFiRTC.getTimeHMStr(timeStr);  // get current time
+  WiFiRTC.getTimeHM(timeStr);  // get current time
   strncpy(_row1, timeStr, 7);     // copy time to row string
   if (strlen(timeStr) < 7) {
     _row1[6] = ' ';               // add a space to the end

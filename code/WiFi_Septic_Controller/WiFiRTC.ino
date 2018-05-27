@@ -40,6 +40,8 @@
 #define FIRST_DAY           1
 #define NUM_DAYS_IN_WEEK    7
 
+bool WiFiRTC_Update_Time_Now = false;
+
 /******************************************************************
  * Day of the week calculator for DST
  ******************************************************************/
@@ -50,85 +52,11 @@ int dstDayOfWeek(int y, int m, int d) {
 }
 
 /******************************************************************
- * Is Time Valid? (Updated from NTP server)
+ * Time Match callback once a second
  ******************************************************************/
-bool WiFiRTCClass::isValidTime() {
-  return _validTime;
-}
-
-/******************************************************************
- * Is it Daylight Savings Time?
- ******************************************************************/
-bool WiFiRTCClass::isDST() {
-  if (_autoDST) {
-    int year    = _rtc.getYear() + 2000;
-    int month   = _rtc.getMonth();
-    int day     = _rtc.getDay();
-    int hour    = _rtc.getHours();
-    int minutes = _rtc.getMinutes();
-    int seconds = _rtc.getSeconds();
-    
-    // determine daylight savings time start and end dates
-    int startDayDST = FIRST_DAY + NUM_DAYS_IN_WEEK + 
-                      dstDayOfWeek(year, MARCH, FIRST_DAY);
-    int endDayDST = FIRST_DAY + 
-                    dstDayOfWeek(year, NOVEMBER, FIRST_DAY);
-
-    // update DST change day and changed variables
-    if ((month == MARCH && day == startDayDST) || 
-        (month == NOVEMBER && day == endDayDST)) {
-      // today IS a Daylight Savings Time update day
-      _isDSTChangeDay = true;
-    } else {
-      // today IS NOT a Daylight Savings Time update day
-      _isDSTChangeDay = false;
-      _isDSTChanged = false;
-    }
-
-    // get DST status
-    bool DST = true;
-    if (month < MARCH) {
-      // before March
-      DST = false;
-    } else if (month == MARCH) {
-      // we are in March
-      if (day < startDayDST) {
-        // March but before start day
-        DST = false;
-      } else if (day == startDayDST) {
-        // we are on start day
-        if (hour < 2) {
-          // before 2:00 AM
-          DST = false;
-        }
-      }
-    }
-    else if (month > NOVEMBER) {
-      // after November
-      DST = false;
-    } else if (month == NOVEMBER) {
-      // we are in November
-      if (day > endDayDST) {
-        // November but after end day
-        DST = false;
-      } else if (day == endDayDST) {
-        // we are on end day
-        if (hour >= 2) {
-          // after 2:00 AM
-          DST = false;
-        }
-      }
-    }
-
-    // return DST status
-    return DST;
-    
-  } else {
-    // automatic DST is off so we do not adjust for DST
-    _isDSTChangeDay = false;
-    _isDSTChanged = false;
-    return false;
-  }  
+void alarmMatch()
+{
+  WiFiRTC_Update_Time_Now = true;
 }
 
 /******************************************************************
@@ -148,205 +76,269 @@ void WiFiRTCClass::begin(int8_t tzDiff, bool autoDST) {
   _rtc.begin();                     // start the Zero RTC
   _tzDiff = tzDiff;                 // timezone offset without DST, txDiff is in hours
   _autoDST = autoDST;               // do we want automatic DST updates
-  // last update and check time is two hours ago
-  _lastUpdateTime = millis() - 2 * 60 * 60 * 1000;
   _configured = true;               // we are now configured
+  _lastUpdateTime = 0 - 60*60*1000; // last update time was 1 hour ago
+  
+  // update local time
+  updateTime();
+
+  // setup an alarm for every minute
+  _rtc.setAlarmTime(0, 0, 0);
+  _rtc.attachInterrupt(alarmMatch);  
+  _rtc.enableAlarm(_rtc.MATCH_SS);
 }
 
 /******************************************************************
  * Keep things up to date
  ******************************************************************/
 void WiFiRTCClass::loop() {
+  uint32_t lastUpdateTimeDiff = millis() - _lastUpdateTime;
   // do nothing if not configured
   if (!_configured) {
     return;
   }
 
+  // did RTC alarm match interrupt indicate time to update?
+  if (WiFiRTC_Update_Time_Now) {
+    WiFiRTC.updateTime();
+    WiFiRTC_Update_Time_Now = false;;
+  }
+  
   // check time if top of the hour or 
   //   not valid time and top of minute or
   //   it's been more than an hour since last check
-  if ((_rtc.getMinutes() == 0 && _rtc.getSeconds() == 0) || 
-      (millis() - _lastUpdateTime > (60 * 60 * 1000)) ||
-      (!_validTime && _rtc.getSeconds() == 0)) {
+  if ((!_validTime && lastUpdateTimeDiff > 14*1000) ||    // every 14 seconds
+      (_validTime && lastUpdateTimeDiff > 47*60*1000)) {  // every 47 minutes
     // update time from WINC1500 module
     uint32_t epoch = WiFi.getTime();
     if (epoch != 0) {
+      Log("Updating time from WINC1500, new time = ");
       // time from WINC1500 module is valid, adjust for timezone difference
       epoch = epoch + (uint32_t)(_tzDiff * 60 * 60);
       _rtc.setEpoch(epoch);         // set RTC time
+      updateTime();                 // update local time too
       if (isDST()) {
         // Daylight Savings Time is in effect
         epoch += 60 * 60;           // add an hour
         _rtc.setEpoch(epoch);       // set RTC time
+        updateTime();               // update local time now
         if (_isDSTChangeDay) {
           _isDSTChanged = true;     // stop further adjustments to time due to DST
         }
       }
+      printTimeHMS24Hr();           // print the new time
+      Println("");                  // add linefeed
+      _lastUpdateTime = millis();   // update last time was checked
       _validTime = true;            // time is now valid
-      Println("Updated time from WINC1500.");
     } else {
       // time for WINC1500 module IS NOT valid, check for DST adjustment of RTC time
       bool DST = isDST();           // get current DST status
       if (_validTime && _isDSTChangeDay && !_isDSTChanged) {
         epoch = _rtc.getEpoch();    // get RTC epoch
-        if (_rtc.getMonth() < 6) {
+        if (_month < 6) {
           // we are looking for change from ST to DST
           if (DST) {
             epoch += 60 * 60;       // add an hour
-            _rtc.setEpoch(epoch);   // set RTC time
-            _isDSTChanged = true;   // stop further adjustments to time due to DST change
           }
         } else {
           // we are looking for a change from DST to ST
           if (!DST) {
             epoch -= 60 * 60;       // subtract an hour
-            _rtc.setEpoch(epoch);   // set RTC time
-            _isDSTChanged = true;   // stop further adjustments to time due to DST change
           }
         }
+        _rtc.setEpoch(epoch);       // set RTC time
+        updateTime();               // update local time now
+        _isDSTChanged = true;       // stop further adjustments to time due to DST change
       }
-      Println("Failed to update time from WINC1500.");
+      _validTime = false;           // time is NOT valid
+      _lastUpdateTime = millis();   // update last time was checked
+      Logln("Failed to update time from WINC1500.");
     }
-    _lastUpdateTime = millis();     // last update is now
   }
 }
 
+/******************************************************************
+ * Get the current time from RTC and save in local variables
+ ******************************************************************/
+void WiFiRTCClass::updateTime() {
+  RTC_MODE2_CLOCK_Type clockTime = _rtc.getTime();
+
+  // save local variables
+  _year = clockTime.bit.YEAR + 2000;
+  _month = clockTime.bit.MONTH;
+  _day = clockTime.bit.DAY;
+  _hour = clockTime.bit.HOUR;
+  _minute = clockTime.bit.MINUTE;
+  _second = clockTime.bit.SECOND;
+}
+
+/******************************************************************
+ * Is Time Valid? (Updated from NTP server)
+ ******************************************************************/
+bool WiFiRTCClass::isValidTime() {
+  return _validTime;
+}
 
 /******************************************************************
  * Get the current Second
  ******************************************************************/
-uint8_t WiFiRTCClass::getSeconds() {
-  return _rtc.getSeconds();
+uint8_t WiFiRTCClass::getSecond() {
+  // update seconds
+  _second = _rtc.getSeconds();
+  
+  return _second;
 }
 
 /******************************************************************
  * Get the current Minute
  ******************************************************************/
-uint8_t WiFiRTCClass::getMinutes() {
-  return _rtc.getMinutes();
+uint8_t WiFiRTCClass::getMinute() {
+  return _minute;
 }
 
 /******************************************************************
  * Get the current Hour
  ******************************************************************/
-uint8_t WiFiRTCClass::getHours() {
-  return _rtc.getHours();
+uint8_t WiFiRTCClass::getHour() {
+  return _hour;
 }
 
 /******************************************************************
  * Get the current Day
  ******************************************************************/
 uint8_t WiFiRTCClass::getDay() {
-  return _rtc.getDay();
+  return _day;
 }
 
 /******************************************************************
  * Get the current Month
  ******************************************************************/
 uint8_t WiFiRTCClass::getMonth() {
-  return _rtc.getMonth();
+  return _month;
 }
 
 /******************************************************************
  * Get the current Year
  ******************************************************************/
 uint16_t WiFiRTCClass::getYear() {
-  return (uint16_t) _rtc.getYear() + 2000;
+  return _year;
 }
 
+/******************************************************************
+ * Is it Daylight Savings Time?
+ ******************************************************************/
+bool WiFiRTCClass::isDST() {
+  bool DST = true;
+  
+  // determine daylight savings time
+  if (_autoDST) {
+    // determine daylight savings time start and end dates
+    int startDayDST = FIRST_DAY + NUM_DAYS_IN_WEEK + 
+                      dstDayOfWeek(_year, MARCH, FIRST_DAY);
+    int endDayDST = FIRST_DAY + 
+                    dstDayOfWeek(_year, NOVEMBER, FIRST_DAY);
+
+    // update DST change day and changed variables
+    if ((_month == MARCH && _day == startDayDST) || 
+        (_month == NOVEMBER && _day == endDayDST)) {
+      // today IS a Daylight Savings Time update day
+      _isDSTChangeDay = true;
+    } else {
+      // today IS NOT a Daylight Savings Time update day
+      _isDSTChangeDay = false;
+      _isDSTChanged = false;
+    }
+
+    // get DST status
+    DST = true;
+    if (_month < MARCH) {
+      // before March
+      DST = false;
+    } else if (_month == MARCH) {
+      // we are in March
+      if (_day < startDayDST) {
+        // March but before start day
+        DST = false;
+      } else if (_day == startDayDST) {
+        // we are on start day
+        if (_hour < 2) {
+          // before 2:00 AM
+          DST = false;
+        }
+      }
+    }
+    else if (_month > NOVEMBER) {
+      // after November
+      DST = false;
+    } else if (_month == NOVEMBER) {
+      // we are in November
+      if (_day > endDayDST) {
+        // November but after end day
+        DST = false;
+      } else if (_day == endDayDST) {
+        // we are on end day
+        if (_hour >= 2) {
+          // after 2:00 AM
+          DST = false;
+        }
+      }
+    }    
+  } else {
+    // automatic DST is off so we do not adjust for DST
+    _isDSTChangeDay = false;
+    _isDSTChanged = false;
+    DST = false;
+  }
+
+  return DST;
+}
 
 /******************************************************************
- * Store time in 12 hour format to timeStr pointer like 9:33:10 PM
+ * Store time in 12 hour format to timeStr pointer like 9:33:10PM
  *   Must have at least 12 characters room to store the string
  ******************************************************************/
-void WiFiRTCClass::getTimeHMSStr(char *timeStr) {
+void WiFiRTCClass::getTimeHMS(char *timeStr) {
   bool pm = false;
-  uint8_t hours = _rtc.getHours();
+  uint8_t hour = _hour;
 
-  if (hours >= 12) {
+  // update seconds
+  _second = _rtc.getSeconds();
+  
+  if (hour >= 12) {
     pm = true;
   }
-  if (hours > 12) {
-    hours -= 12;
+  if (hour > 12) {
+    hour -= 12;
   }
-  uint8_t minutes = _rtc.getMinutes();
-  uint8_t seconds = _rtc.getSeconds();
-  if (hours < 10) {
+  if (hour < 10) {
     // single digit hour
-    *timeStr++ = '0';
-    itoa(hours, timeStr, 10);
+    itoa(hour, timeStr, 10);
     ++timeStr;
   } else {
     // double digit hour
-    itoa(hours, timeStr, 10);
+    itoa(hour, timeStr, 10);
     timeStr += 2;
   }
   *timeStr++ = ':';
-  if (minutes < 10) {
+  if (_minute < 10) {
     // single digit minutes
     *timeStr++ = '0';
-    itoa(minutes, timeStr, 10);
+    itoa(_minute, timeStr, 10);
     ++timeStr;
   } else {
     // double digit minutes
-    itoa(minutes, timeStr, 10);
+    itoa(_minute, timeStr, 10);
     timeStr += 2;
   }
   *timeStr++ = ':';
-  if (seconds < 10) {
+  if (_second < 10) {
     // single digit seconds
     *timeStr++ = '0';
-    itoa(seconds, timeStr, 10);
+    itoa(_second, timeStr, 10);
     ++timeStr;
   } else {
     // double digit seconds
-    itoa(seconds, timeStr, 10);
-    timeStr += 2;
-  }
-  *timeStr++ = ' ';
-  if (pm) {
-    *timeStr++ = 'P';
-  } else {
-    *timeStr++ = 'A';
-  }
-  *timeStr++ = 'M';
-  *timeStr = 0;
-}
-
-/******************************************************************
- * Store time in 12 hour format to timeStr pointer like 9:33 PM
- *   Must have at least 9 characters room to store the string
- ******************************************************************/
-void WiFiRTCClass::getTimeHMStr(char *timeStr) {
-  bool pm = false;
-  uint8_t hours = _rtc.getHours();
-
-  if (hours >= 12) {
-    pm = true;
-  }
-  if (hours > 12) {
-    hours -= 12;
-  }
-  uint8_t minutes = _rtc.getMinutes();
-  uint8_t seconds = _rtc.getSeconds();
-  if (hours < 10) {
-    // single digit hour
-    itoa(hours, timeStr, 10);
-    ++timeStr;
-  } else {
-    // double digit hour
-    itoa(hours, timeStr, 10);
-    timeStr += 2;
-  }
-  *timeStr++ = ':';
-  if (minutes < 10) {
-    // single digit minutes
-    *timeStr++ = '0';
-    itoa(minutes, timeStr, 10);
-    ++timeStr;
-  } else {
-    // double digit minutes
-    itoa(minutes, timeStr, 10);
+    itoa(_second, timeStr, 10);
     timeStr += 2;
   }
   //*timeStr++ = ' ';
@@ -360,44 +352,127 @@ void WiFiRTCClass::getTimeHMStr(char *timeStr) {
 }
 
 /******************************************************************
- * Store time in 24 hour format to timeStr pointer like 09:33:10
+ * Store time in 12 hour format to timeStr pointer like 9:33PM
  *   Must have at least 9 characters room to store the string
  ******************************************************************/
-void WiFiRTCClass::getTimeHMS24HrStr(char *timeStr) {
-  uint8_t hours = _rtc.getHours();
-  uint8_t minutes = _rtc.getMinutes();
-  uint8_t seconds = _rtc.getSeconds();
-  if (hours < 10) {
+void WiFiRTCClass::getTimeHM(char *timeStr) {
+  bool pm = false;
+  uint8_t hour = _hour;
+
+  if (_hour >= 12) {
+    pm = true;
+  }
+  if (_hour > 12) {
+    hour -= 12;
+  }
+  if (hour < 10) {
     // single digit hour
-    itoa(hours, timeStr, 10);
+    itoa(hour, timeStr, 10);
     ++timeStr;
   } else {
     // double digit hour
-    itoa(hours, timeStr, 10);
+    itoa(hour, timeStr, 10);
     timeStr += 2;
   }
   *timeStr++ = ':';
-  if (minutes < 10) {
+  if (_minute < 10) {
     // single digit minutes
     *timeStr++ = '0';
-    itoa(minutes, timeStr, 10);
+    itoa(_minute, timeStr, 10);
     ++timeStr;
   } else {
     // double digit minutes
-    itoa(minutes, timeStr, 10);
+    itoa(_minute, timeStr, 10);
+    timeStr += 2;
+  }
+  //*timeStr++ = ' ';
+  if (pm) {
+    *timeStr++ = 'P';
+  } else {
+    *timeStr++ = 'A';
+  }
+  *timeStr++ = 'M';
+  *timeStr = 0;
+}
+
+/******************************************************************
+ * Store time in 24 hour format to timeStr pointer like 14:33:10
+ *   Must have at least 9 characters room to store the string
+ ******************************************************************/
+void WiFiRTCClass::getTimeHMS24Hr(char *timeStr) {
+  // update seconds
+  _second = _rtc.getSeconds();
+  
+  if (_hour < 10) {
+    // single digit hour
+    *timeStr++ = '0';
+    itoa(_hour, timeStr, 10);
+    ++timeStr;
+  } else {
+    // double digit hour
+    itoa(_hour, timeStr, 10);
     timeStr += 2;
   }
   *timeStr++ = ':';
-  if (seconds < 10) {
+  if (_minute < 10) {
+    // single digit minutes
+    *timeStr++ = '0';
+    itoa(_minute, timeStr, 10);
+    ++timeStr;
+  } else {
+    // double digit minutes
+    itoa(_minute, timeStr, 10);
+    timeStr += 2;
+  }
+  *timeStr++ = ':';
+  if (_second < 10) {
     // single digit seconds
     *timeStr++ = '0';
-    itoa(seconds, timeStr, 10);
+    itoa(_second, timeStr, 10);
   } else {
     // double digit seconds
-    itoa(seconds, timeStr, 10);
+    itoa(_second, timeStr, 10);
   }
 }
 
+/******************************************************************
+ * Print time in 12 hour format like 9:33:10PM
+ ******************************************************************/
+void WiFiRTCClass::printTimeHMS() {
+#ifdef ENABLE_SERIAL
+  char timeStr[12];
+
+  getTimeHMS(timeStr);
+
+  Print(timeStr);
+#endif
+}
+
+/******************************************************************
+ * Print time in 12 hour format like 9:33PM
+ ******************************************************************/
+void WiFiRTCClass::printTimeHM() {
+#ifdef ENABLE_SERIAL
+  char timeStr[9];
+
+  getTimeHM(timeStr);
+
+  Print(timeStr);
+#endif
+}
+
+/******************************************************************
+ * Print time in 24 hour format like 14:33:10
+ ******************************************************************/
+void WiFiRTCClass::printTimeHMS24Hr() {
+#ifdef ENABLE_SERIAL
+  char timeStr[9];
+
+  getTimeHMS24Hr(timeStr);
+
+  Print(timeStr);
+#endif
+}
 
 /******************************************************************
  * Single instance of WiFiRTCClass

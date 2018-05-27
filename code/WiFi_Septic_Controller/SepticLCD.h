@@ -44,7 +44,10 @@ public:
 
   void setBacklightColor(uint8_t r, uint8_t g, uint8_t b);
   void setBacklightColor(uint8_t color);
-  void setDisplayMessage(char* msg);
+  void setDisplayMessage(const char *msg);
+  void setDisplayMessage(const String &msg) {
+    return setDisplayMessage( msg.c_str() ); 
+  }
   float getTemperatureC() {
     return _temperatureC;
   }

@@ -31,9 +31,9 @@
 // Enable Watchdog Timer
 #define ENABLE_WATCHDOG
 // Enable OTA updates
-//#define ENABLE_OTA_UPDATES
+#define ENABLE_OTA_UPDATES
 // Enable Serial on USB
-#define ENABLE_SERIAL
+//#define ENABLE_SERIAL
 // Current Version
 #define VERSION                   "0.1"
 
@@ -44,17 +44,21 @@
 // Used as MQTT Client ID, HASS Name, and OTA Name
 #define BOARD_NAME                "Septic"
 // input debounce time in milliseconds
-#define DEBOUNCE_TIME             25
-// pump toggle switch input debounce time in milliseconds (1000 is DEBOUNCE_TIME = 25)
-#define PUMP_TOGGLE_DEBOUNCE_TIME 20 * DEBOUNCE_TIME
-// pump toggle switch input debounce time in milliseconds (100 is DEBOUNCE_TIME = 25)
-#define ALARM_DEBOUNCE_TIME       10 * DEBOUNCE_TIME
+#define DEBOUNCE_TIME             100
+// pump toggle switch input debounce time in milliseconds
+//   Should be larger than DEBOUNCE_TIME
+#define PUMP_TOGGLE_DEBOUNCE_TIME 500
+// pump toggle switch input debounce time in milliseconds
+//   Should be larger than DEBOUNCE_TIME
+#define ALARM_DEBOUNCE_TIME       500
 // pump state machine deadband time in milliseconds
 #define PUMP_DEADBAND_TIME        2000
 // alarm state machine deadband time in milliseconds
 #define ALARM_DEADBAND_TIME       2000
-// temperature publish time in milliseconds
+// temperature publish time in milliseconds when pump is off
 #define TEMP_PUBLISH_RATE         5 * 60 * 1000
+// temperature publish time in milliseconds when pump is on
+#define TEMP_PUMP_ON_PUBLISH_RATE 30 * 1000
 // timezone difference from GMT in hours (Standard Time difference)
 #define TZDIFF                    -6
 
@@ -64,25 +68,20 @@
 #define HASS_PREFIX               "hass"
 #define HASS_NODE_NAME            "septic"
 // HASS defines below here should not be modified
-//#define HASS_GATE_CONFIG_TOPIC    HASS_PREFIX "/cover/" HASS_NODE_NAME "/gate/config"
-//#define HASS_GATE_STATE_TOPIC     HASS_PREFIX "/cover/" HASS_NODE_NAME "/gate/state"
-//#define HASS_GATE_COMMAND_TOPIC   HASS_PREFIX "/cover/" HASS_NODE_NAME "/gate/set"
-//#define HASS_GATE_CONFIG          "{ \"name\": \"" BOARD_NAME "\", \"command_topic\": \"" HASS_GATE_COMMAND_TOPIC \
-//                                  "\", \"state_topic\": \"" HASS_GATE_STATE_TOPIC "\", \"qos\": 1, \"retain\": false }"
 #define HASS_TEMP_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/temperature/config"
 #define HASS_TEMP_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/temperature/state"
 #define HASS_TEMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Temperature\", \"state_topic\": \"" HASS_TEMP_STATE_TOPIC \
-                                  "\", \"unit_of_measurement\": \"°C\" }"
+                                  "\", \"unit_of_measurement\": \"\\u00b0C\" }"
 #define HASS_RSSI_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/rssi/config"
 #define HASS_RSSI_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/rssi/state"
 #define HASS_RSSI_CONFIG          "{ \"name\": \"" BOARD_NAME " RSSI\", \"state_topic\": \"" HASS_RSSI_STATE_TOPIC \
                                   "\", \"unit_of_measurement\": \"dBm\" }"
-#define HASS_PUMP_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/pump/config"
-#define HASS_PUMP_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/pump/state"
+#define HASS_PUMP_CONFIG_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/pump/config"
+#define HASS_PUMP_STATE_TOPIC     HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/pump/state"
 #define HASS_PUMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Pump\", \"state_topic\": \"" HASS_PUMP_STATE_TOPIC "\" }"
 
-#define HASS_ALARM_CONFIG_TOPIC   HASS_PREFIX "/sensor/" HASS_NODE_NAME "/alarm/config"
-#define HASS_ALARM_STATE_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/alarm/state"
+#define HASS_ALARM_CONFIG_TOPIC   HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/config"
+#define HASS_ALARM_STATE_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/state"
 #define HASS_ALARM_CONFIG         "{ \"name\": \"" BOARD_NAME " Alarm\", \"state_topic\": \"" HASS_ALARM_STATE_TOPIC "\" }"
 
 #define HASS_STATUS_CONFIG_TOPIC  HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/config"
@@ -126,15 +125,19 @@
 // 1-Wire pin
 #define OWIRE                     2
 // pin number array for the eight inputs on this board (pins are D7, MISO, D1, D4, SCK, MOSI)
-const int8_t input_pins[NUMBER_INPUTS] = {7, 10, 1, 4, 9, 8};
+const uint8_t input_pins[NUMBER_INPUTS] = {7, 10, 1, 4, 9, 8};
 
 // Printing defines
 #ifdef ENABLE_SERIAL
 #define Print(...)                Serial.print(__VA_ARGS__)
 #define Println(...)              Serial.println(__VA_ARGS__)
+#define Log(...)                  {WiFiRTC.printTimeHMS24Hr();Serial.print(' ');Serial.print(__VA_ARGS__);}
+#define Logln(...)                {WiFiRTC.printTimeHMS24Hr();Serial.print(' ');Serial.println(__VA_ARGS__);}
 #else
-#define Print(...)                        
-#define Println(...)                        
+#define Print(...)
+#define Println(...)
+#define Log(...)
+#define Logln(...)
 #endif
 
 #endif // WIFI_SEPTIC_CONTROLLER_H

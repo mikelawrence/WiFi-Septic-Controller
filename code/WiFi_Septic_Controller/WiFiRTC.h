@@ -28,7 +28,7 @@
 #ifndef WIFI_RTC_H
 #define WIFI_RTC_H
 
-#include <RTCZero.h>
+#include "RTCZero.h"
 
 class WiFiRTCClass {
 public:
@@ -37,21 +37,28 @@ public:
   void      begin(int8_t tzDiff = 0, bool autoDST = true);
   void      loop(void);
   
-  uint8_t   getSeconds();
-  uint8_t   getMinutes();
-  uint8_t   getHours();
+  void      updateTime();
+
+  uint8_t   getSecond();
+  uint8_t   getMinute();
+  uint8_t   getHour();
   
   uint8_t   getDay();
   uint8_t   getMonth();
   uint16_t  getYear();
 
-  void      getTimeHMStr(char* timeStr);
-  void      getTimeHMSStr(char* timeStr);
-  void      getTimeHMS24HrStr(char* timeStr);
+  bool      isDST();
+
+  void      getTimeHM(char* timeStr);
+  void      getTimeHMS(char* timeStr);
+  void      getTimeHMS24Hr(char* timeStr);
+
+  void      printTimeHM();
+  void      printTimeHMS();
+  void      printTimeHMS24Hr();
 
   bool      isValidTime();
-  bool      isDST();
-  
+
 private:
   // Real Time Clock for SAMD
   RTCZero _rtc;
@@ -59,17 +66,29 @@ private:
   bool _configured = false;
   // true when time has been updated from NTP server
   bool _validTime;
+  // last sampled year
+  uint16_t _year;
+  // last sampled month
+  uint8_t  _month;
+  // last sampled dayar
+  uint8_t  _day;
+  // last sampled hour
+  uint8_t  _hour;
+  // last sampled minute
+  uint8_t  _minute;
+  // last sampled second
+  uint8_t  _second;
   // true when today a Daylight Savings Time change day
   bool _isDSTChangeDay;
   // true when Daylight Savings Time has been changed today
   //   prevent multiple changes from occurring
   bool _isDSTChanged;
-  // last update time in milliseconds
+  // last time time was updated from WINC1500 or server
   uint32_t _lastUpdateTime;
   // timezone difference from GMT in hours
   int8_t _tzDiff;
   // true when time should adjust for DST automatically
-  bool _autoDST;  
+  bool _autoDST;
 };
 
 extern WiFiRTCClass WiFiRTC;

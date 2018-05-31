@@ -36,6 +36,8 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 #define ENABLE_OTA_UPDATES
 // Enable Serial on USB
 //#define ENABLE_SERIAL
+// Enable Low Power Mode on WiFi
+#define ENABLE_WIFI_LOW_POWER
 // Current Version
 #define VERSION                   "0.1"
 ```
@@ -43,6 +45,7 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 * "ENABLE_WATCHDOG" - When defined, the Watchdog Timer is enabled with a 16 second timeout. This will reset the ARM processor is something goes bad.
 * "ENABLE_OTA_UPDATES" - When defined, the sketch can be updated using Arduino's Over-The-Air Update capability.
 * "ENABLE_SERIAL" - When defined, status information is sent out the serial connection which in this case is the USB port. Otherwise the serial port won't even be enabled.
+* When "ENABLE_WIFI_LOW_POWER" is defined the WINC1500 module is set to Low Power Mode. This can drop the current requirements of the module to a third or even less. Low Power Mode reduces the transmit frequency to the beacon interval and may also cause the module to hang occasionally.
 
 ```c
 /******************************************************************
@@ -66,10 +69,10 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 #define ALARM_DEADBAND_TIME       2000
 // temperature publish time in milliseconds when pump is off
 #define TEMP_PUBLISH_RATE         5 * 60 * 1000
-// temperature publish time in milliseconds when pump is on
-#define TEMP_PUMP_ON_PUBLISH_RATE 30 * 1000
 // timezone difference from GMT in hours (Standard Time difference)
 #define TZDIFF                    -6
+// Solid State Relay shutoff temperature in Celsius
+#define SSR_SHUTOFF_TEMP          65.0
 
 /******************************************************************
  * Home Assistant MQTT Defines
@@ -84,7 +87,8 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 * "PUMP_DEADBAND_TIME" - How long after the Pump State Machine changes states before allowing another state change. This is an integer and the units are milliseconds.
 * "ALARM_DEADBAND_TIME" - How long after the Alarm State Machine changes states before allowing another state change. This is an integer and the units are milliseconds.
 * "TEMP_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT. This is an integer and the units are milliseconds. The time should not be less than 5000 milliseconds.
-* "TEMP_PUMP_ON_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT when the effluent pump is on. The Solid State Relay will cause the temperature to rise and quicker temperature sampling is nice. This is an integer and the units are milliseconds. The time should not be less than 5000 milliseconds.
+** "TZDIFF" - Used to correct internet time for your given timezone. This should be the Standard Time timezone difference to GMT. It is a integer and units are hours.
+* "SSR_SHUTOFF_TEMP" - Specifies the temperature is which the pump state machine will shut off the SSR. It is a float.
 * "HASS_PREFIX" - The Home Assistant MQTT Discovery Prefix as defined in your system. This is a string.
 * "HASS_NODE_NAME" - Used in the MQTT topics to identify the cover and sensor to Home Assistant. Home Assistant calls this the node id. It is a string and should not contain special characters including spaces.
 
@@ -119,6 +123,7 @@ sensor:
 ```
 
 Septic Status can be one of the following:
+* "Overtemp Alarm On" - The SSR temperature is too high and the effluent pump has been turned off. The pump will come back on when the temperature has dropped 15 C. Most likely the effluent pump is drawing too much current or the SSR is failing.
 * "Tank High Alarm On" - The top float in the tank is on. Most likely the effluent pump is not working.
 * "Air Pump Alarm On" - The air compressor is not producing any air pressure.
 * "Bleach Alarm On" -  Bleach level is low.

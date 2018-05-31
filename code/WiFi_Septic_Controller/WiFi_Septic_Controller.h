@@ -34,8 +34,10 @@
 #define ENABLE_OTA_UPDATES
 // Enable Serial on USB
 //#define ENABLE_SERIAL
+// Enable Low Power Mode on WiFi
+//#define ENABLE_WIFI_LOW_POWER
 // Current Version
-#define VERSION                   "0.1"
+#define VERSION                   "0.2"
 
 /******************************************************************
  * Application defines
@@ -56,11 +58,11 @@
 // alarm state machine deadband time in milliseconds
 #define ALARM_DEADBAND_TIME       2000
 // temperature publish time in milliseconds when pump is off
-#define TEMP_PUBLISH_RATE         5 * 60 * 1000
-// temperature publish time in milliseconds when pump is on
-#define TEMP_PUMP_ON_PUBLISH_RATE 30 * 1000
+#define TEMP_PUBLISH_RATE         1*60*1000
 // timezone difference from GMT in hours (Standard Time difference)
 #define TZDIFF                    -6
+// Solid State Relay shutoff temperature in Celsius
+#define SSR_SHUTOFF_TEMP          65.0
 
 /******************************************************************
  * Home Assistant MQTT Defines
@@ -127,7 +129,7 @@
 // pin number array for the eight inputs on this board (pins are D7, MISO, D1, D4, SCK, MOSI)
 const uint8_t input_pins[NUMBER_INPUTS] = {7, 10, 1, 4, 9, 8};
 
-// Printing defines
+// Logging/Printing defines
 #ifdef ENABLE_SERIAL
 #define Print(...)                Serial.print(__VA_ARGS__)
 #define Println(...)              Serial.println(__VA_ARGS__)

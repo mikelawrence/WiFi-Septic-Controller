@@ -316,14 +316,14 @@ bool connect() {
       } else {
         Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
       }
-    } else {
+/*    } else {
       // MQTT just connected
       if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset MQTT Connect", true, 1)) {
         // since no reset or WiFi connect occurred then it was a MQTT Connect
         Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'ResetMQTT Connect' topic value");
       } else {
         Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset MQTT Connect' topic value");
-      }
+      }*/
     }
     
     // Home Assistant will ignore too frequent publishing on topics
@@ -1103,5 +1103,8 @@ void loop() {
       Println("' topic value");
     }
     nextTempPublish += TEMP_PUBLISH_RATE;             // prepare for next publish time
+    if (nextTempPublish < millis()) {
+      nextTempPublish = millis() + TEMP_PUBLISH_RATE; // we don't want to play catchup
+    }
   }
 }

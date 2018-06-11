@@ -106,6 +106,7 @@
 #define LCD_BACKLIGHT_R           PIN_A3
 #define LCD_BACKLIGHT_G           PIN_A4
 #define LCD_BACKLIGHT_B           11
+// Output State defines
 #define PUMP_RELAY_ACTIVE         HIGH
 #define PUMP_RELAY_INACTIVE       LOW
 // Input array defines

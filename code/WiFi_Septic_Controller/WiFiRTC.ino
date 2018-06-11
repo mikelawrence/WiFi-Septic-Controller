@@ -93,7 +93,7 @@ void WiFiRTCClass::begin(int8_t tzDiff, const char* ntpServerName, bool autoDST)
   _timeServerName = ntpServerName;      // save specified NTP server
   _autoDST = autoDST;                   // do we want automatic DST updates
   _configured = true;                   // we are now configured
-  _lastUpdateTime = 0 - NTP_FAST_UPDATE_TIME + 1000;// should update time immediately
+  _lastUpdateTime = 0 - (NTP_FAST_UPDATE_TIME + 1000);// should update time immediately
 
   _UDPRequestSent = false;              // we are not currently waiting for an NTP Server response
   _udp.begin(NTP_INCOMING_PORT);        // begin listening for NTP response UDP packets     
@@ -121,6 +121,16 @@ void WiFiRTCClass::loop() {
     WiFiRTC_Update_Time_Now = false;
   }
 
+  // if we aren't connected then we can't be waiting for a UDP NTP response packet
+  if (WiFi.status() != WL_CONNECTED) {
+    // prep for immediate time update when reconnected
+    _validTime = false;
+    _UDPRequestSent = false; 
+    _lastUpdateTime = millis() - (NTP_FAST_UPDATE_TIME + 1000);
+    // do nothing else until we are connected
+    return;
+  }
+
   if (_UDPRequestSent) {
       uint8_t packetBuffer[NTP_PACKET_SIZE];
       uint32_t curEpoch = _rtc.getEpoch();
@@ -132,8 +142,8 @@ void WiFiRTCClass::loop() {
       // no packet received from NTP server
       if (millis() - _lastUDPRequestTime > 2*1000) {
         // timeout ocurred waiting for NTP response
-        _UDPRequestSent = false;  // not waiting for UDP response anymore
-        _validTime = false;       // will switch to faster update until success
+        _UDPRequestSent = false;      // not waiting for UDP response anymore
+        _validTime = false;           // will switch to faster update until success
         Logln("Failed to receive response from NTP Server.");
       }
       // done with current loop execution
@@ -156,30 +166,31 @@ void WiFiRTCClass::loop() {
     if (packetBuffer[44] > (uint8_t)(0.5-0.06)*256) {
       newEpoch ++;
     }
-    _rtc.setEpoch(newEpoch);      // set RTC time
-    updateTime();                 // update local time too
+    _rtc.setEpoch(newEpoch);          // set RTC time
+    updateTime();                     // update local time too
     if (_isDST) {
       // Daylight Savings Time is in effect
-      newEpoch += 60 * 60;        // add an hour
-      _rtc.setEpoch(newEpoch);    // set RTC time
-      updateTime();               // update local time again since we adjusted for DST
+      newEpoch += 60 * 60;            // add an hour
+      _rtc.setEpoch(newEpoch);        // set RTC time
+      updateTime();                   // update local time again since we adjusted for DST
       if (_isDSTChangeDay) {
-        _isDSTChanged = true;     // stop further adjustments to time due to DST
+        _isDSTChanged = true;         // stop further adjustments to time due to DST
       }
     }
-    Log("Updated time from '");   // log updated time
+    Log("Updated time from '");       // log updated time
     Print(_timeServerName);
     Print("', time diff = ");
     Print((int32_t)(newEpoch - curEpoch));
     Println(" sec.");
-    _validTime = true;            // time is now valid
-    _UDPRequestSent = false;      // no longer waiting for a response
+    _validTime = true;                // time is now valid
+    _UDPRequestSent = false;          // no longer waiting for a response
     _lastUpdateTime = _lastUDPRequestTime; // time was just updated
   } else {
     // we are not waiting for a response from NTP Server 
     // Time to sync with NTP server if
+    //   WiFi is connected and
     //   not valid time and it's been longer than NTP_FAST_UPDATE_TIME
-    //   valid time and it's been longer than NTP_FAST_UPDATE_TIME
+    //   or valid time and it's been longer than NTP_SLOW_UPDATE_TIME
     if ((!_validTime && lastUpdateTimeDiff > NTP_FAST_UPDATE_TIME) ||
         (_validTime && lastUpdateTimeDiff > NTP_SLOW_UPDATE_TIME)) {
       // send a request to NTP server

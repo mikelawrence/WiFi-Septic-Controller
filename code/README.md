@@ -2,7 +2,12 @@
 The WiFi Septic Controller Sketch is written in C++. The sketch is primarily two state machines: one for effluent pump control and one for alarm state. The pump state machine can detect when the override float has applied power to the pump thus providing some indication of over usage or rain seepage into the tanks. The sketch is a discoverable set of sensors for [Home Assistant](https://home-assistant.io/), an open-source home automation platform running on Python. [MQTT](http://mqtt.org/), a machine-to-machine (M2M)/"Internet of Things" connectivity protocol, is the basis of communication with Home Assistant.
 
 ## Status
-This software is only partially complete. The state machines have been tested on a lab bench but not connected to an actual septic controller. Home Assistant detects all MQTT sensors: Status Sensor, Pump Sensor, Alarm Sensor, Temperature Sensor, and RSSI Sensor.
+This software is in the testing stage and is connected to my septic system.
+* Automatic On at 1:00 AM is working but the time it comes has varied upwards of 15 minutes. Discovered that the WINC1500 module time keeping is pretty bad so it was bypassed with direct NTP handling in the WiFiRTC module. The current build has the fix and testing is in progress.
+* Experienced the controller going silent on the network (pump state machine continues to work correctly). It appears that the WiFi module can loose connection and still show the status as connected. Added MQTT connect timeout which stops the WiFi connection. This stop cause the WiFi reconnect and hopefully fix the problem automatically. The current build has the fix and testing is in progress.
+* Pump state machine working nicely. Have tested Tank Empty, Off states, Manual On, Automatic On and Override On states. Overtemp state has not been tested.
+* All alarms work correctly: Tank High Alarm, Air Pump Alarm, and Bleach Alarm. Overtemp Alarm has not been tested.
+* Home Assistant detects all MQTT sensors: Status Sensor, Pump Sensor, Alarm Sensor, Temperature Sensor, and RSSI Sensor.
 
 # Setup
 ## Sketch Setup

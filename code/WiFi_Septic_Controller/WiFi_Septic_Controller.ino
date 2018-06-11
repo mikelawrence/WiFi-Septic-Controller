@@ -269,6 +269,9 @@ bool connect() {
     WiFiOTA.begin(BOARD_NAME, OTA_PASSWORD, InternalStorage);
     Println("WiFi OTA updates enabled");
     #endif
+  
+    // Start the WiFi Real Time Clock
+    WiFiRTC.begin(TZDIFF, NTP_SERVER);
   }
   
   if (!mqtt.connected()) {
@@ -397,9 +400,6 @@ void setup() {
   for (int i = 0; i < NUMBER_INPUTS; i++) {
     pinMode(input_pins[i], INPUT);                    // set mode to input
   }
-  
-  // Start the WiFi Real Time Clock
-  WiFiRTC.begin(TZDIFF, NTP_SERVER);
 
   // Start the Septic LCD
   SepticLCD.begin();

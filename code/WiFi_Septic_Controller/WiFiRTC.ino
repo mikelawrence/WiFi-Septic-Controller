@@ -25,6 +25,9 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
+  The NTP client code came from Arduino
+  https://github.com/arduino-libraries/NTPClient
+  
   Determining the start and end dates of Daylight Saving Time came from
   Clive (Max) Maxfield
   https://www.embedded.com/electronics-blogs/max-unleashed-and-unfettered/4441673/Is-that-the-daylight-saving-time-
@@ -34,12 +37,24 @@
 #include "WiFi_Septic_Controller.h"
 #include "WiFiRTC.h"
 
-// These defines are used by the Start and End DST date calculator
-#define MARCH               3
-#define NOVEMBER            11
-#define FIRST_DAY           1
-#define NUM_DAYS_IN_WEEK    7
+// NTP defines
+//#define NTP_DEFAULT_SERVER      "time.nist.gov"
+#define NTP_PACKET_SIZE         48
+#define NTP_INCOMING_PORT       2390
+#define NTP_OUTGOING_PORT       123
+#define SEVENTYYEARS            2208988800UL
+// With invalid time or recent missed NTP response how often to update (default 14 seconds)
+#define NTP_FAST_UPDATE_TIME    14*1000
+// With valid time how often should NTP requests happen (default a little less than 12 hours)
+#define NTP_SLOW_UPDATE_TIME    12*60*60*1000 - 3*60*1000
 
+// These defines are used by the Start and End DST date calculator
+#define MARCH                   3
+#define NOVEMBER                11
+#define FIRST_DAY               1
+#define NUM_DAYS_IN_WEEK        7
+
+// global variable used to let the one and only WiFiRTC object know it is update time
 bool WiFiRTC_Update_Time_Now = false;
 
 /******************************************************************
@@ -63,25 +78,26 @@ void alarmMatch()
  * Default Constructor
  ******************************************************************/
 WiFiRTCClass::WiFiRTCClass() {
-  _configured = false;              // We haven't been configured yet
-  _validTime = false;               // RTC has not been set via NTP
-  _tzDiff = 0;                      // timezone not set
-  _autoDST = false;                 // Automatic DST off
+  _configured = false;                  // We haven't been configured yet
+  _validTime = false;                   // RTC has not been set via NTP
+  _tzDiff = 0;                          // timezone not set
+  _autoDST = false;                     // Automatic DST off
 }
 
 /******************************************************************
  * Begin everything
  ******************************************************************/
-void WiFiRTCClass::begin(int8_t tzDiff, bool autoDST) {
-  _rtc.begin();                     // start the Zero RTC
-  _tzDiff = tzDiff;                 // timezone offset without DST, txDiff is in hours
-  _autoDST = autoDST;               // do we want automatic DST updates
-  _configured = true;               // we are now configured
-  _lastUpdateTime = 0 - 60*60*1000; // last update time was 1 hour ago
-  
-  // update local time
-  updateTime();
+void WiFiRTCClass::begin(int8_t tzDiff, const char* ntpServerName, bool autoDST) {
+  _rtc.begin();                         // start the Zero RTC
+  _tzDiff = tzDiff;                     // timezone offset without DST, txDiff is in hours
+  _timeServerName = ntpServerName;      // save specified NTP server
+  _autoDST = autoDST;                   // do we want automatic DST updates
+  _configured = true;                   // we are now configured
+  _lastUpdateTime = 0 - NTP_FAST_UPDATE_TIME + 1000;// should update time immediately
 
+  _UDPRequestSent = false;              // we are not currently waiting for an NTP Server response
+  _udp.begin(NTP_INCOMING_PORT);        // begin listening for NTP response UDP packets     
+  
   // setup an alarm for every minute
   _rtc.setAlarmTime(0, 0, 0);
   _rtc.attachInterrupt(alarmMatch);  
@@ -93,6 +109,7 @@ void WiFiRTCClass::begin(int8_t tzDiff, bool autoDST) {
  ******************************************************************/
 void WiFiRTCClass::loop() {
   uint32_t lastUpdateTimeDiff = millis() - _lastUpdateTime;
+  
   // do nothing if not configured
   if (!_configured) {
     return;
@@ -100,59 +117,87 @@ void WiFiRTCClass::loop() {
 
   // did RTC alarm match interrupt indicate time to update?
   if (WiFiRTC_Update_Time_Now) {
-    WiFiRTC.updateTime();
-    WiFiRTC_Update_Time_Now = false;;
+    updateTime();
+    WiFiRTC_Update_Time_Now = false;
   }
-  
-  // check time if top of the hour or 
-  //   not valid time and top of minute or
-  //   it's been more than an hour since last check
-  if ((!_validTime && lastUpdateTimeDiff > 14*1000) ||    // every 14 seconds
-      (_validTime && lastUpdateTimeDiff > 47*60*1000)) {  // every 47 minutes
-    // update time from WINC1500 module
-    uint32_t epoch = WiFi.getTime();
-    if (epoch != 0) {
-      Log("Updating time from WINC1500, new time = ");
-      // time from WINC1500 module is valid, adjust for timezone difference
-      epoch = epoch + (uint32_t)(_tzDiff * 60 * 60);
-      _rtc.setEpoch(epoch);         // set RTC time
-      updateTime();                 // update local time too
-      if (isDST()) {
-        // Daylight Savings Time is in effect
-        epoch += 60 * 60;           // add an hour
-        _rtc.setEpoch(epoch);       // set RTC time
-        updateTime();               // update local time now
-        if (_isDSTChangeDay) {
-          _isDSTChanged = true;     // stop further adjustments to time due to DST
-        }
-      }
-      printTimeHMS24Hr();           // print the new time
-      Println("");                  // add linefeed
-      _lastUpdateTime = millis();   // update last time was checked
-      _validTime = true;            // time is now valid
+
+  if (_UDPRequestSent) {
+      uint8_t packetBuffer[NTP_PACKET_SIZE];
+      uint32_t curEpoch = _rtc.getEpoch();
+    // we are waiting for a response from NTP Server
+    if (_udp.parsePacket()) {
+      // packet received from NTP server
+      _udp.read(packetBuffer, NTP_PACKET_SIZE);
     } else {
-      // time for WINC1500 module IS NOT valid, check for DST adjustment of RTC time
-      bool DST = isDST();           // get current DST status
-      if (_validTime && _isDSTChangeDay && !_isDSTChanged) {
-        epoch = _rtc.getEpoch();    // get RTC epoch
-        if (_month < 6) {
-          // we are looking for change from ST to DST
-          if (DST) {
-            epoch += 60 * 60;       // add an hour
-          }
-        } else {
-          // we are looking for a change from DST to ST
-          if (!DST) {
-            epoch -= 60 * 60;       // subtract an hour
-          }
-        }
-        _rtc.setEpoch(epoch);       // set RTC time
-        updateTime();               // update local time now
-        _isDSTChanged = true;       // stop further adjustments to time due to DST change
+      // no packet received from NTP server
+      if (millis() - _lastUDPRequestTime > 2*1000) {
+        // timeout ocurred waiting for NTP response
+        _UDPRequestSent = false;  // not waiting for UDP response anymore
+        _validTime = false;       // will switch to faster update until success
+        Logln("Failed to receive response from NTP Server.");
       }
-      _validTime = false;           // time is NOT valid
-      _lastUpdateTime = millis();   // update last time was checked
-      Logln("Failed to update time from WINC1500.");
+      // done with current loop execution
+      return;
+    }
+        
+    // combine the four bytes (two words) into a long integer
+    // this is NTP time (seconds since Jan 1 1900):
+    uint32_t newEpoch = word(packetBuffer[40], packetBuffer[41]) << 16 | 
+                     word(packetBuffer[42], packetBuffer[43]);
+    // convert NTP epoch (since 1900) to UNIX epoch (since 1970)
+    newEpoch -= SEVENTYYEARS;
+    // adjust for timezone difference
+    newEpoch += (uint32_t)(_tzDiff * 60 * 60);
+    // Nearest second round comes from https://github.com/aharshac/EasyNTPClient
+    // Round to the nearest second if we want accuracy
+    // The fractionary part is the next byte divided by 256: if it is
+    // greater than 500ms we round to the next second; we also account
+    // for an assumed network delay of 50ms and 10ms processing time
+    if (packetBuffer[44] > (uint8_t)(0.5-0.06)*256) {
+      newEpoch ++;
+    }
+    _rtc.setEpoch(newEpoch);      // set RTC time
+    updateTime();                 // update local time too
+    if (_isDST) {
+      // Daylight Savings Time is in effect
+      newEpoch += 60 * 60;        // add an hour
+      _rtc.setEpoch(newEpoch);    // set RTC time
+      updateTime();               // update local time again since we adjusted for DST
+      if (_isDSTChangeDay) {
+        _isDSTChanged = true;     // stop further adjustments to time due to DST
+      }
+    }
+    Log("Updated time from '");   // log updated time
+    Print(_timeServerName);
+    Print("', time diff = ");
+    Print((int32_t)(newEpoch - curEpoch));
+    Println(" sec.");
+    _validTime = true;            // time is now valid
+    _UDPRequestSent = false;      // no longer waiting for a response
+    _lastUpdateTime = _lastUDPRequestTime; // time was just updated
+  } else {
+    // we are not waiting for a response from NTP Server 
+    // Time to sync with NTP server if
+    //   not valid time and it's been longer than NTP_FAST_UPDATE_TIME
+    //   valid time and it's been longer than NTP_FAST_UPDATE_TIME
+    if ((!_validTime && lastUpdateTimeDiff > NTP_FAST_UPDATE_TIME) ||
+        (_validTime && lastUpdateTimeDiff > NTP_SLOW_UPDATE_TIME)) {
+      // send a request to NTP server
+      sendNTPPacket();
+      _lastUDPRequestTime = millis(); // start UDP request time  
+      _lastUpdateTime = _lastUDPRequestTime; // start last update time too
+      _UDPRequestSent = true;         // let class know we sent a packet
+    } else {
+      // not time to update, check for DST adjustment of RTC time
+      if (_validTime && _isDSTChangeDay && !_isDSTChanged) {
+        Logln("Time invalidated due to Daylight Savings Time change.");
+        // time is NOT valid
+        _validTime = false;       
+        // force an immediate update of time
+        _lastUpdateTime = millis() - NTP_FAST_UPDATE_TIME - 1000; 
+        // stop further adjustments to time due to DST change
+        _isDSTChanged = true;
+      }
     }
   }
 }
@@ -170,6 +215,68 @@ void WiFiRTCClass::updateTime() {
   _hour = clockTime.bit.HOUR;
   _minute = clockTime.bit.MINUTE;
   _second = clockTime.bit.SECOND;
+
+  // determine daylight savings time
+  if (_autoDST) {
+    // start with DST as true
+    _isDST = true;
+    
+    // determine daylight savings time start and end dates
+    int startDayDST = FIRST_DAY + NUM_DAYS_IN_WEEK + 
+                      dstDayOfWeek(_year, MARCH, FIRST_DAY);
+    int endDayDST = FIRST_DAY + 
+                    dstDayOfWeek(_year, NOVEMBER, FIRST_DAY);
+
+    // update DST change day and changed variables
+    if ((_month == MARCH && _day == startDayDST) || 
+        (_month == NOVEMBER && _day == endDayDST)) {
+      // today IS a Daylight Savings Time update day
+      _isDSTChangeDay = true;
+    } else {
+      // today IS NOT a Daylight Savings Time update day
+      _isDSTChangeDay = false;
+      _isDSTChanged = false;
+    }
+
+    // get DST status
+    if (_month < MARCH) {
+      // before March
+      _isDST = false;
+    } else if (_month == MARCH) {
+      // we are in March
+      if (_day < startDayDST) {
+        // March but before start day
+        _isDST = false;
+      } else if (_day == startDayDST) {
+        // we are on start day
+        if (_hour < 2) {
+          // before 2:00 AM
+          _isDST = false;
+        }
+      }
+    }
+    else if (_month > NOVEMBER) {
+      // after November
+      _isDST = false;
+    } else if (_month == NOVEMBER) {
+      // we are in November
+      if (_day > endDayDST) {
+        // November but after end day
+        _isDST = false;
+      } else if (_day == endDayDST) {
+        // we are on end day
+        if (_hour >= 2) {
+          // after 2:00 AM
+          _isDST = false;
+        }
+      }
+    }    
+  } else {
+    // automatic DST is off so we do not adjust for DST
+    _isDSTChangeDay = false;
+    _isDSTChanged = false;
+    _isDST = false;
+  }
 }
 
 /******************************************************************
@@ -183,9 +290,7 @@ bool WiFiRTCClass::isValidTime() {
  * Get the current Second
  ******************************************************************/
 uint8_t WiFiRTCClass::getSecond() {
-  // update seconds
-  _second = _rtc.getSeconds();
-  
+  updateTime();             // update current time variables from RTC
   return _second;
 }
 
@@ -225,77 +330,8 @@ uint16_t WiFiRTCClass::getYear() {
 }
 
 /******************************************************************
- * Is it Daylight Savings Time?
- ******************************************************************/
-bool WiFiRTCClass::isDST() {
-  bool DST = true;
-  
-  // determine daylight savings time
-  if (_autoDST) {
-    // determine daylight savings time start and end dates
-    int startDayDST = FIRST_DAY + NUM_DAYS_IN_WEEK + 
-                      dstDayOfWeek(_year, MARCH, FIRST_DAY);
-    int endDayDST = FIRST_DAY + 
-                    dstDayOfWeek(_year, NOVEMBER, FIRST_DAY);
-
-    // update DST change day and changed variables
-    if ((_month == MARCH && _day == startDayDST) || 
-        (_month == NOVEMBER && _day == endDayDST)) {
-      // today IS a Daylight Savings Time update day
-      _isDSTChangeDay = true;
-    } else {
-      // today IS NOT a Daylight Savings Time update day
-      _isDSTChangeDay = false;
-      _isDSTChanged = false;
-    }
-
-    // get DST status
-    DST = true;
-    if (_month < MARCH) {
-      // before March
-      DST = false;
-    } else if (_month == MARCH) {
-      // we are in March
-      if (_day < startDayDST) {
-        // March but before start day
-        DST = false;
-      } else if (_day == startDayDST) {
-        // we are on start day
-        if (_hour < 2) {
-          // before 2:00 AM
-          DST = false;
-        }
-      }
-    }
-    else if (_month > NOVEMBER) {
-      // after November
-      DST = false;
-    } else if (_month == NOVEMBER) {
-      // we are in November
-      if (_day > endDayDST) {
-        // November but after end day
-        DST = false;
-      } else if (_day == endDayDST) {
-        // we are on end day
-        if (_hour >= 2) {
-          // after 2:00 AM
-          DST = false;
-        }
-      }
-    }    
-  } else {
-    // automatic DST is off so we do not adjust for DST
-    _isDSTChangeDay = false;
-    _isDSTChanged = false;
-    DST = false;
-  }
-
-  return DST;
-}
-
-/******************************************************************
  * Store time in 12 hour format to timeStr pointer like 9:33:10PM
- *   Must have at least 12 characters room to store the string
+ *   Must have at least 11 characters room to store the string
  ******************************************************************/
 void WiFiRTCClass::getTimeHMS(char *timeStr) {
   bool pm = false;
@@ -312,8 +348,9 @@ void WiFiRTCClass::getTimeHMS(char *timeStr) {
   }
   if (hour < 10) {
     // single digit hour
+    *timeStr++ = '0';
     itoa(hour, timeStr, 10);
-    ++timeStr;
+    timeStr += 1;
   } else {
     // double digit hour
     itoa(hour, timeStr, 10);
@@ -472,6 +509,32 @@ void WiFiRTCClass::printTimeHMS24Hr() {
 
   Print(timeStr);
 #endif
+}
+
+/******************************************************************
+ * Send NTP request UDP
+ ******************************************************************/
+void WiFiRTCClass::sendNTPPacket() {
+  uint8_t packetBuffer[NTP_PACKET_SIZE];
+  // set all bytes in the buffer to 0
+  memset(packetBuffer, 0, NTP_PACKET_SIZE);
+  // Initialize values needed to form NTP request
+  packetBuffer[ 0] = 0b11100011;     // LI, Version, Mode
+  packetBuffer[ 1] = 0;              // Stratum, or type of clock
+  packetBuffer[ 2] = 6;              // Polling Interval
+  packetBuffer[ 3] = 0xEC;           // Peer Clock Precision
+  // 8 bytes of zero for Root Delay & Root Dispersion
+  packetBuffer[12]  = 49;
+  packetBuffer[13]  = 0x4E;
+  packetBuffer[14]  = 49;
+  packetBuffer[15]  = 52;
+
+  // all NTP fields have been given values, now
+  // you can send a packet requesting a timestamp:
+  IPAddress timeServer(129, 6, 15, 28);
+  _udp.beginPacket(_timeServerName, NTP_OUTGOING_PORT);
+  _udp.write(packetBuffer, NTP_PACKET_SIZE);
+  _udp.endPacket();
 }
 
 /******************************************************************

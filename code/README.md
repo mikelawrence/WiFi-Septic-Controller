@@ -87,7 +87,8 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 * "PUMP_DEADBAND_TIME" - How long after the Pump State Machine changes states before allowing another state change. This is an integer and the units are milliseconds.
 * "ALARM_DEADBAND_TIME" - How long after the Alarm State Machine changes states before allowing another state change. This is an integer and the units are milliseconds.
 * "TEMP_PUBLISH_RATE" - How often the temperature should be sampled and published via MQTT. This is an integer and the units are milliseconds. The time should not be less than 5000 milliseconds.
-** "TZDIFF" - Used to correct internet time for your given timezone. This should be the Standard Time timezone difference to GMT. It is a integer and units are hours.
+* "NTP_SERVER" - NTP Server that is used to update local time. NTP Updates occur slightly less than every 12 hours. This is a string and can be a valid DNS host name or IP Address.
+* "TZDIFF" - Used to correct internet time for your given timezone. This should be the Standard Time timezone difference to GMT. It is a integer and units are hours.
 * "SSR_SHUTOFF_TEMP" - Specifies the temperature is which the pump state machine will shut off the SSR. It is a float.
 * "HASS_PREFIX" - The Home Assistant MQTT Discovery Prefix as defined in your system. This is a string.
 * "HASS_NODE_NAME" - Used in the MQTT topics to identify the cover and sensor to Home Assistant. Home Assistant calls this the node id. It is a string and should not contain special characters including spaces.

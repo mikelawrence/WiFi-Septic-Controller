@@ -70,12 +70,16 @@
 */
 
 /******************************************************************
- * Defines
+ * Defines and enumerations
  ******************************************************************/
+// time in milliseconds that a WiFi connection is unresponsive before reconnecting
+#define         WIFI_CONNECTION_RETRY_TIME    5*60*1000
+// time in milliseconds between MQTT connection attempts
+#define         MQTT_CONNECTION_DELAY_TIME    10*1000
 // Enumeration for pump state
 enum PumpStateEnum {PS_RESET, PS_TANK_EMPTY, PS_OVERTEMP, PS_OFF, PS_OFF_A, PS_MANUAL_ON, PS_MANUAL_ON_A, PS_AUTO_ON, PS_OVER_ON}; 
 // Enumeration for alarm state
-enum AlarmStateEnum {AS_RESET, AS_OFF, AS_OVERTEMP, AS_TANK_HIGH, AS_AIR_PUMP, AS_BLEACH_LEVEL}; 
+enum AlarmStateEnum {AS_RESET, AS_OFF, AS_OVERTEMP, AS_TANK_HIGH, AS_AIR_PUMP, AS_BLEACH_LEVEL};
 
 /******************************************************************
  * Global Variables
@@ -196,26 +200,46 @@ void displayPumpState(bool force) {
  * Verify/ Make WiFi and MQTT connections
  ******************************************************************/
 bool connect() {
-  static uint32_t lastMQTTRetryTime = millis() - 10 * 1000;
+  static uint8_t  lastMQTTRetryCount = 0;
+  static uint32_t lastMQTTRetryTime = millis() - 10*1000;
+  static uint32_t lastDisconnectTime;
   byte            mac[6];
   IPAddress       ip;
+  int32_t         status = WiFi.status();
 
   // Reset the watchdog every time connect() is called
   watchdogReset();
   
-  if (WiFi.status() != WL_CONNECTED) {
+  if (status != WL_CONNECTED) {
     // Wifi is disconnected
-    wifiDisconnectOccurred = true;                    // keep track of the fact we were disconnected
-    return false;                                     // indicate there is a problem
+    wifiDisconnectOccurred = true;                    // we were disconnected
+    if (abs(millis() - lastDisconnectTime) > 4*WIFI_CONNECTION_RETRY_TIME) {
+      // something went wrong with lastDisconnectTime, reset
+      lastDisconnectTime = millis() - WIFI_CONNECTION_RETRY_TIME - 10;
+    }
+    if (millis() - lastDisconnectTime > WIFI_CONNECTION_RETRY_TIME) {
+      // it's been too long minutes since we were last connected, turn off WiFi module
+      WiFi.end();
+      // Turn on WINC1500 WiFi module and connect to network again
+      WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
+      // Reconnect in another 15 minutes
+      lastDisconnectTime = millis();
+      Println("Reconnecting to SSID: " SECRET_SSID "...");
+    }
+    return false;                                     // return with not connected
   }
-  if (wifiDisconnectOccurred && (WiFi.status() == WL_CONNECTED)) {
-    // WiFi is connected and previously we were disconnected
+  
+  // update last time we were disconnected to now because WiFi is connected
+  lastDisconnectTime = millis();
+  
+  if (wifiDisconnectOccurred && (status == WL_CONNECTED)) {
+    // WiFi just connected
     Println("Connected to SSID: " SECRET_SSID);
     
     // we have detected that we just connected
     wifiDisconnectOccurred = false;                   // so we won't print network stats until next reconnect
     wifiConnectOccurred = true;                       // so MQTT publishing will know that Wifi just connected
-
+    
     // Enable WiFi Low Power Mode
     #ifdef ENABLE_WIFI_LOW_POWER
     WiFi.lowPowerMode();
@@ -239,20 +263,30 @@ bool connect() {
     Print("  IP Address: ");
     Println(ip);
     #endif
-
+    
     #ifdef ENABLE_OTA_UPDATES
     // start the WiFi OTA library with internal based storage
     WiFiOTA.begin(BOARD_NAME, OTA_PASSWORD, InternalStorage);
-    #ifdef ENABLE_SERIAL
     Println("WiFi OTA updates enabled");
     #endif
-    #endif
-    Println();
   }
   
   if (!mqtt.connected()) {
+    if (++lastMQTTRetryCount >= WIFI_CONNECTION_RETRY_TIME/MQTT_CONNECTION_DELAY_TIME) {
+      // it's been too long since we had an MQTT connection, turn off WiFi module
+      WiFi.end(); 
+      // Turn on WINC1500 WiFi module and connect to network again
+      WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
+      lastMQTTRetryTime = millis();                   // restart MQTT retry time
+      lastMQTTRetryCount = 0;                         // MQTT retry count will need to start over
+      return false;                                   // we are not connected
+    }
+    if (abs(millis() - lastMQTTRetryTime) > 4*MQTT_CONNECTION_DELAY_TIME) {
+      // something went wrong with lastMQTTRetryTime, reset
+      lastMQTTRetryTime = millis() - MQTT_CONNECTION_DELAY_TIME - 1;
+    }
     // we are not currently connected to MQTT Server
-    if (millis() - lastMQTTRetryTime <= 10 * 1000) {
+    if (millis() - lastMQTTRetryTime <= MQTT_CONNECTION_DELAY_TIME) {
       // not time to retry MQTT connection
       return false;
     }
@@ -264,6 +298,7 @@ bool connect() {
     } else {
       // failed to connect to MQTT server
       Println("Failed");
+      ++lastMQTTRetryCount;
       lastMQTTRetryTime = millis();
       return false;
     }
@@ -340,6 +375,7 @@ bool connect() {
   
   // be ready for next MQTT retry time
   lastMQTTRetryTime = millis();
+  lastMQTTRetryCount = 0;
   
   // if we got here then we are connected
   return true;
@@ -363,7 +399,7 @@ void setup() {
   }
   
   // Start the WiFi Real Time Clock
-  WiFiRTC.begin(TZDIFF, true);
+  WiFiRTC.begin(TZDIFF, NTP_SERVER);
 
   // Start the Septic LCD
   SepticLCD.begin();
@@ -783,7 +819,7 @@ void loop() {
       case PS_TANK_EMPTY:
         // we are in the tank went empty while pumping
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_INACTIVE); // force effluent pump off
-        if (millis() - lastPSDeadbandTime >= 5 * 1000) {
+        if (millis() - lastPSDeadbandTime >= 30 * 1000) {
           // delay time has elapsed
           // do not reset deadband time so Pump Off state won't wait for a new deadband time
           lastPumpOffStartTime = millis();            // new beginning of off time
@@ -877,18 +913,13 @@ void loop() {
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
         // get how long has effluent pump been on
         timeDiff = millis() - lastPumpOnStartTime;
-        if (millis() - lastPSDeadbandTime >= PUMP_DEADBAND_TIME) {
+        if (millis() - lastPSDeadbandTime >= 30 * 1000) {
           // deadband time has elapsed so we can change states now
           if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
             // the effluent pump shut itself off due to low level float
             lastPSDeadbandTime = millis();            // start a new deadband time
             lastPumpOffStartTime = millis();          // new beginning of off time
             nextPumpState = PS_TANK_EMPTY;            // switch to Tank Empty State
-          } else if (timeDiff > 3 * 60 * 60 * 1000) {
-            // Auto On time too long (more than 3 hours)
-            lastPSDeadbandTime = millis();            // start a new deadband time
-            lastPumpOffStartTime = millis();          // new beginning of off time
-            nextPumpState = PS_OFF;                   // switch to Pump Off State
           }
         }
         break;

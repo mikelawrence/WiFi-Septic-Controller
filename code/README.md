@@ -5,7 +5,7 @@ The WiFi Septic Controller Sketch is written in C++. The sketch is primarily two
 This software is in the testing stage and is connected to my septic system.
 * Automatic On at 1:00 AM is working but the time it comes has varied upwards of 15 minutes. Discovered that the WINC1500 module time keeping is pretty bad so it was bypassed with direct NTP handling in the WiFiRTC module. The current build has the fix and testing is in progress.
 * Experienced the controller going silent on the network (pump state machine continues to work correctly). It appears that the WiFi module can loose connection and still show the status as connected. Added MQTT connect timeout which stops the WiFi connection. This stop cause the WiFi reconnect and hopefully fix the problem automatically. The current build has the fix and testing is in progress.
-* Pump state machine working nicely. Have tested Tank Empty, Off states, Manual On, Automatic On and Override On states. Overtemp state has not been tested.
+* Pump state machine is working nicely. Have tested Tank Empty, Off states, Manual On, Automatic On and Override On states. Overtemp state has not been tested.
 * All alarms work correctly: Tank High Alarm, Air Pump Alarm, and Bleach Alarm. Overtemp Alarm has not been tested.
 * Home Assistant detects all MQTT sensors: Status Sensor, Pump Sensor, Alarm Sensor, Temperature Sensor, and RSSI Sensor.
 
@@ -74,6 +74,8 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
 #define ALARM_DEADBAND_TIME       2000
 // temperature publish time in milliseconds when pump is off
 #define TEMP_PUBLISH_RATE         5 * 60 * 1000
+// NTP server used to update local time, can be IP Address or name
+#define NTP_SERVER                "time.nist.gov"
 // timezone difference from GMT in hours (Standard Time difference)
 #define TZDIFF                    -6
 // Solid State Relay shutoff temperature in Celsius

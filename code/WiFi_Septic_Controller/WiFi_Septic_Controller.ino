@@ -415,9 +415,19 @@ void setup() {
   Println("\nWiFi Septic Controller: " BOARD_NAME);
   Println("  Software Version: " VERSION);
   
-//Configure pins for Adafruit ATWINC1500 Feather
-//WiFi.setPins(8,7,4,2);
-
+  // Configuration based on board type
+  #if   defined(ARDUINO_SAMD_FEATHER_M0)
+  // Adafruit Feather M0 WINC1500 is sometimes used for testing
+  Println("Arduino Board Type: Adafruit Feather M0");
+  WiFi.setPins(8,7,4,2);                              // Feather M0 needs the WiFi pins redefined
+  #elif defined(ARDUINO_SAMD_MKR1000)
+  // The WiFi Septic Controller board emulates a MRK1000 board
+  Println("Arduino Board Type: Arduino MKR1000");
+  #else
+  // Other boards can work but may require WiFi pin redefinition
+  Println("Arduino Board Type: Unknown");
+  #endif
+  
   // WiFi setup
   if (WiFi.status() == WL_NO_SHIELD) {                // check for the presence of the WINC1500
     Println("WINC1500 not present! Nothing can be done!");

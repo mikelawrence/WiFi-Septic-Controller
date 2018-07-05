@@ -52,7 +52,7 @@
 #define PUMP_TOGGLE_DEBOUNCE_TIME 500
 // pump toggle switch input debounce time in milliseconds
 //   Should be larger than DEBOUNCE_TIME
-#define ALARM_DEBOUNCE_TIME       500
+#define ALARM_DEBOUNCE_TIME       1000
 // pump state machine deadband time in milliseconds
 #define PUMP_DEADBAND_TIME        2000
 // alarm state machine deadband time in milliseconds

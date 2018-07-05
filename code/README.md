@@ -58,7 +58,6 @@ The rest of the sketch settings are C defines in the [WiFi_Septic_Controller.h](
  ******************************************************************/
 // Name of this board, each board should be unique
 // Used as MQTT Client ID, HASS Name, and OTA Name
-// Used as MQTT Client ID, HASS Name, and OTA Name
 #define BOARD_NAME                "Septic"
 // input debounce time in milliseconds
 #define DEBOUNCE_TIME             100

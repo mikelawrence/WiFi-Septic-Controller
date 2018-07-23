@@ -1,7 +1,7 @@
 # Wireless Septic Controller
 I had some problems with my newly installed aerobic septic system when hurricane Harvey blew through. There was no significant flooding but there was plenty of rain and that seemed to cause the system to pump multiple times. This board is designed to give visibility as to how often the pump runs and will detail alarm conditions. The effluent pump is controlled with an external 50A Solid-State-Relay (SSR). This board also provides an alarm output required by most aerobic septic systems. Normally the alarm switches are wired in parallel so that any alarm condition with turn on the light and audible alert. This board has separate inputs for three alarm switches so that the alarm condition can be identified. This board supports the following alarm types: air pressure failure alarm, tank high level alarm, and bleach low level alarm. WiFi is provided by an ATWINC1500 module which is an excellent low power WiFi module that is directly supported by Arduino. This board is fully compatible with the Arduino MRK1000 which includes a SAMD21G18 ARM processor and a ATWINC1500 module. This board uses MQTT to communicate with Home Assistant home automation software. The MQTT client/server model is very effective in this situation.
 
-This PCB is designed using [KiCad](http://kicad-pcb.org). Note this design is using a nightly build of KiCad NOT the current released version (4.07).
+This PCB is designed using [KiCad 5.0.0](http://kicad-pcb.org). 
 
 _Note: There is dangerous voltage present on this PCB. Use care when handling this board. Housing this board in a box is required to protect users from electrocution._
 

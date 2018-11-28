@@ -12,15 +12,18 @@
    
   MQTT, a machine-to-machine (M2M)/"Internet of Things" connectivity 
   protocol, is the basis of communication with Home Assistant.
+
+  Built with Arduino IDE 1.8.7
   
   The following libraries must be installed using Library Manager:
   
-    WiFi101 by Arduino
-    WiFiOTA by Arduino
-    LiquidCrystal by Arduino
-    MQTT by Joel Gaehwiler
-    OneWire by Paul Stoffregen and many others
-    DallasTemperature by Miles Burton and others
+    WiFi101 version 0.15.3 by Arduino
+      WINC1501 Model B firmware version 19.5.4
+    WiFiOTA version 1.0.2 by Arduino
+    LiquidCrystal version 1.0.7 by Arduino
+    MQTT version 2.3.3 by Joel Gaehwiler
+    OneWire version 2.3.4 by Paul Stoffregen and many others
+    DallasTemperature version 3.8.0 by Miles Burton and others
   
   Copyright (c) 2018 Mike Lawrence
 
@@ -73,7 +76,7 @@
  * Defines and enumerations
  ******************************************************************/
 // time in milliseconds that a WiFi connection is unresponsive before reconnecting
-#define         WIFI_CONNECTION_RETRY_TIME    5*60*1000
+#define         WIFI_CONNECTION_RETRY_TIME    15*60*1000
 // time in milliseconds between MQTT connection attempts
 #define         MQTT_CONNECTION_DELAY_TIME    10*1000
 // Enumeration for pump state
@@ -84,7 +87,7 @@ enum AlarmStateEnum {AS_RESET, AS_OFF, AS_OVERTEMP, AS_TANK_HIGH, AS_AIR_PUMP, A
 /******************************************************************
  * Global Variables
  ******************************************************************/
-// Network
+// network
 WiFiClient      net;
 // MQTT CLient
 MQTTClient      mqtt(1024);
@@ -218,11 +221,11 @@ bool connect() {
       lastDisconnectTime = millis() - WIFI_CONNECTION_RETRY_TIME - 10;
     }
     if (millis() - lastDisconnectTime > WIFI_CONNECTION_RETRY_TIME) {
-      // it's been too long minutes since we were last connected, turn off WiFi module
+      // it's been too long since we were last connected, turn off WiFi module
       WiFi.end();
-      // Turn on WINC1500 WiFi module and connect to network again
+      // turn on WINC1500 WiFi module and connect to network again
       WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
-      // Reconnect in another 15 minutes
+      // try reconnecting after another full timeout
       lastDisconnectTime = millis();
       Println("Reconnecting to SSID: " SECRET_SSID "...");
     }
@@ -240,14 +243,14 @@ bool connect() {
     wifiDisconnectOccurred = false;                   // so we won't print network stats until next reconnect
     wifiConnectOccurred = true;                       // so MQTT publishing will know that Wifi just connected
     
-    // Enable WiFi Low Power Mode
+    // enable WiFi Low Power Mode
     #ifdef ENABLE_WIFI_LOW_POWER
     WiFi.lowPowerMode();
     Println("  Low Power Mode enabled");
     #endif
     
     #ifdef ENABLE_SERIAL
-    // Display MAC Address
+    // display MAC Address
     WiFi.macAddress(mac);
     Print("  MAC Address: ");
     for (int i = 5; i != 0; i--) {
@@ -270,7 +273,7 @@ bool connect() {
     Println("WiFi OTA updates enabled");
     #endif
   
-    // Start the WiFi Real Time Clock
+    // start the WiFi Real Time Clock
     WiFiRTC.begin(TZDIFF, NTP_SERVER);
   }
   
@@ -278,7 +281,7 @@ bool connect() {
     if (++lastMQTTRetryCount >= WIFI_CONNECTION_RETRY_TIME/MQTT_CONNECTION_DELAY_TIME) {
       // it's been too long since we had an MQTT connection, turn off WiFi module
       WiFi.end(); 
-      // Turn on WINC1500 WiFi module and connect to network again
+      // turn on WINC1500 WiFi module and connect to network again
       WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
       lastMQTTRetryTime = millis();                   // restart MQTT retry time
       lastMQTTRetryCount = 0;                         // MQTT retry count will need to start over
@@ -305,35 +308,36 @@ bool connect() {
       lastMQTTRetryTime = millis();
       return false;
     }
-    
+
+    // publish Home Assistant temperature config Topic
     if (!mqtt.publish(HASS_TEMP_CONFIG_TOPIC, HASS_TEMP_CONFIG, true, 1)) {
       Logln("Failed to publish '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic");
     } else {
       Logln("Published '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic, '" HASS_TEMP_CONFIG "' topic value");
     }
     
-    // Publish Home Assistant RSSI config topic
+    // publish Home Assistant RSSI config topic
     if (!mqtt.publish(HASS_RSSI_CONFIG_TOPIC, HASS_RSSI_CONFIG, true, 1)) {
       Logln("Failed to publish '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic");
     } else {
       Logln("Published '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic, '" HASS_RSSI_CONFIG "' topic value");
     }
     
-    // Publish Home Assistant pump config topic
+    // publish Home Assistant pump config topic
     if (!mqtt.publish(HASS_PUMP_CONFIG_TOPIC, HASS_PUMP_CONFIG, true, 1)) {
       Logln("Failed to publish '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic");
     } else {
       Logln("Published '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic, '" HASS_PUMP_CONFIG "' topic value");
     }
     
-    // Publish Home Assistant alarm config topic
+    // publish Home Assistant alarm config topic
     if (!mqtt.publish(HASS_ALARM_CONFIG_TOPIC, HASS_ALARM_CONFIG, true, 1)) {
       Logln("Failed to publish '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic");
     } else {
       Logln("Published '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic, '" HASS_ALARM_CONFIG "' topic value");
     }
     
-    // Publish Home Assistant pump status config topic
+    // publish Home Assistant pump status config topic
     if (!mqtt.publish(HASS_STATUS_CONFIG_TOPIC, HASS_STATUS_CONFIG, true, 1)) {
       Logln("Failed to publish '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic");
     } else {
@@ -401,30 +405,30 @@ void setup() {
     pinMode(input_pins[i], INPUT);                    // set mode to input
   }
 
-  // Start the Septic LCD
+  // start the Septic LCD
   SepticLCD.begin();
 
-  // Serial setup
+  // serial setup
   #ifdef ENABLE_SERIAL
   //while (!Serial);                                  // wait until serial monitor is open
   Serial.begin(115200);
   delay(2000);                                        // takes a bit for the USB to come up
   #endif
   
-  // Announce who we are and software
+  // announce who we are and software
   Println("\nWiFi Septic Controller: " BOARD_NAME);
   Println("  Software Version: " VERSION);
   
-  // Configuration based on board type
+  // configuration based on board type
   #if   defined(ARDUINO_SAMD_FEATHER_M0)
   // Adafruit Feather M0 WINC1500 is sometimes used for testing
   Println("Arduino Board Type: Adafruit Feather M0");
   WiFi.setPins(8,7,4,2);                              // Feather M0 needs the WiFi pins redefined
   #elif defined(ARDUINO_SAMD_MKR1000)
-  // The WiFi Septic Controller board emulates a MRK1000 board
+  // the WiFi Septic Controller board emulates a MRK1000 board
   Println("Arduino Board Type: Arduino MKR1000");
   #else
-  // Other boards can work but may require WiFi pin redefinition
+  // other boards can work but may require WiFi pin redefinition
   Println("Arduino Board Type: Unknown");
   #endif
   
@@ -437,13 +441,13 @@ void setup() {
   
   Println("WINC1500 Detected");
   
-  // Display Firmware Version
+  // display Firmware Version
   Print("  Firmware Version: ");
   Println(WiFi.firmwareVersion());
   Print("  Library Version: ");
   Println(WIFI_FIRMWARE_LATEST_MODEL_B);
         
-  // Turn on WINC1500 WiFi module and connect to network now
+  // turn on WINC1500 WiFi module and connect to network now
   WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
 
   // MQTT setup
@@ -451,7 +455,7 @@ void setup() {
   mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);
   
   #ifdef ENABLE_WATCHDOG
-  // Set up the generic clock (GCLK2) used to clock the watchdog timer at 256Hz
+  // set up the generic clock (GCLK2) used to clock the watchdog timer at 256Hz
   REG_GCLK_GENDIV = GCLK_GENDIV_DIV(6) |              // Divide the 32.768kHz clock source by divisor 32
                                                       //   where 2^(6 + 1): 32.768kHz/128=256Hz
                     GCLK_GENDIV_ID(2);                // Select Generic Clock (GCLK) 2
@@ -464,7 +468,7 @@ void setup() {
                      GCLK_GENCTRL_ID(2);              // Select GCLK2         
   while (GCLK->STATUS.bit.SYNCBUSY);                  // Wait for synchronization
 
-  // Feed GCLK2 to WDT (Watchdog Timer)
+  // feed GCLK2 to WDT (Watchdog Timer)
   REG_GCLK_CLKCTRL = GCLK_CLKCTRL_CLKEN |             // Enable GCLK2 to the WDT
                      GCLK_CLKCTRL_GEN_GCLK2 |         // Select GCLK2
                      GCLK_CLKCTRL_ID_WDT;             // Feed the GCLK2 to the WDT
@@ -503,7 +507,7 @@ void loop() {
   uint8_t         inputReading;                       // last input read
   bool            inputStabilized = true;             // when true inputs are stabilized and are ready to be read
   
-  // Reset the watchdog every time loop() is called
+  // reset the watchdog every time loop() is called
   //watchdogReset();
   
   // keep track of time appropriately
@@ -866,12 +870,12 @@ void loop() {
         // get how long has effluent pump been off
         timeDiff = millis() - lastPumpOffStartTime;
         if (inputState[PUMP_TOGGLE_SWITCH] == PUMP_TOGGLE_ACTIVE) {
-          // manual pump on because the pump toggle switch was pressed
+          // Manual Pump on because the pump toggle switch was pressed
           lastPSDeadbandTime = millis();              // start a new deadband time
           lastPumpOnStartTime = millis();             // new beginning of pump on time
           nextPumpState = PS_MANUAL_ON;               // switch to Manual Pump State
         } else if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
-          // override float/pump came on
+          // Override Float/Pump came on
           lastPSDeadbandTime = millis();              // start a new deadband time
           lastPumpOnStartTime = millis();             // new beginning of pump on time
           nextPumpState = PS_OVER_ON;                 // switch to Override Pump State
@@ -899,10 +903,10 @@ void loop() {
       case PS_MANUAL_ON_A:
         // Effluent Pump is in Manual Pump state and Pump Toggle Switch was released
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        // get how long has effluent pump been on
+        // get how long has Effluent Pump been on
         timeDiff = millis() - lastPumpOnStartTime;
         if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
-          // the effluent pump shut itself off due to low level float
+          // the Effluent Pump shut itself off due to low level float
           lastPSDeadbandTime = millis();              // start a new deadband time
           lastPumpOffStartTime = millis();            // new beginning of pump off time
           nextPumpState = PS_TANK_EMPTY;              // switch to Tank Empty State
@@ -921,12 +925,12 @@ void loop() {
       case PS_AUTO_ON:
         // Effluent Pump is in Automatic Pump state
         digitalWrite(EFFLUENT_PUMP_RELAY, PUMP_RELAY_ACTIVE); // force effluent pump on
-        // get how long has effluent pump been on
+        // get how long has Effluent Pump been on
         timeDiff = millis() - lastPumpOnStartTime;
         if (millis() - lastPSDeadbandTime >= 30 * 1000) {
           // deadband time has elapsed so we can change states now
           if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_INACTIVE) {
-            // the effluent pump shut itself off due to low level float
+            // the Effluent Pump shut itself off due to low level float
             lastPSDeadbandTime = millis();            // start a new deadband time
             lastPumpOffStartTime = millis();          // new beginning of off time
             nextPumpState = PS_TANK_EMPTY;            // switch to Tank Empty State
@@ -961,7 +965,7 @@ void loop() {
   // update LCD
   SepticLCD.loop();
   
-  // Check connections
+  // check connections
   if (!connect()) {
     // we are not currently connected, ignore rest of loop to prevent MQTT publishing
     publishSepticStatus = true;                         // force septic state publish when MQTT comes back on

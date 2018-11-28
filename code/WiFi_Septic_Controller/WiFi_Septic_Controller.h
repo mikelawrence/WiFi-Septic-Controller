@@ -37,7 +37,7 @@
 // Enable Low Power Mode on WiFi
 //#define ENABLE_WIFI_LOW_POWER
 // Current Version
-#define VERSION                   "0.3"
+#define VERSION                   "0.4"
 
 /******************************************************************
  * Application defines

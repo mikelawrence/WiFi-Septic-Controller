@@ -1,7 +1,7 @@
 /*
   Septic WiFi Controller Project wide defines
 
-  Copyright (c) 2018 Mike Lawrence
+  Copyright (c) 2019 Mike Lawrence
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal

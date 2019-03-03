@@ -9,34 +9,34 @@
   of over usage or rain seepage into the tanks. The sketch is a discoverable 
   set of sensors for Home Assistant, an open-source home automation platform 
   running on Python.
-   
+  
   MQTT, a machine-to-machine (M2M)/"Internet of Things" connectivity 
   protocol, is the basis of communication with Home Assistant.
-
-  Built with Arduino IDE 1.8.7
+  
+  Built with Arduino IDE 1.8.8
   
   The following libraries must be installed using Library Manager:
   
     WiFi101 version 0.15.3 by Arduino
-      WINC1501 Model B firmware version 19.5.4
+      WINC1501 Model B firmware version 19.6.1
     WiFiOTA version 1.0.2 by Arduino
     LiquidCrystal version 1.0.7 by Arduino
-    MQTT version 2.3.3 by Joel Gaehwiler
+    MQTT version 2.4.1 by Joel Gaehwiler
     OneWire version 2.3.4 by Paul Stoffregen and many others
     DallasTemperature version 3.8.0 by Miles Burton and others
   
-  Copyright (c) 2018 Mike Lawrence
-
+  Copyright (c) 2019 Mike Lawrence
+  
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
   in the Software without restriction, including without limitation the rights
   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
   copies of the Software, and to permit persons to whom the Software is
   furnished to do so, subject to the following conditions:
-
+  
   The above copyright notice and this permission notice shall be included in all
   copies or substantial portions of the Software.
-
+  
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -308,7 +308,7 @@ bool connect() {
       lastMQTTRetryTime = millis();
       return false;
     }
-
+    
     // publish Home Assistant temperature config Topic
     if (!mqtt.publish(HASS_TEMP_CONFIG_TOPIC, HASS_TEMP_CONFIG, true, 1)) {
       Logln("Failed to publish '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic");
@@ -451,7 +451,7 @@ void setup() {
   WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
 
   // MQTT setup
-  mqtt.setOptions(65, true, 5000);                    // keep Alive, Clean Session, Timeout
+  mqtt.setOptions(65, true, 1000);                    // keep Alive, Clean Session, Timeout
   mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);
   
   #ifdef ENABLE_WATCHDOG
@@ -982,7 +982,7 @@ void loop() {
     lastEffluentPumpSense = inputState[EFFLUENT_PUMP_SENSE];
   }
   
-  //  publish pump state
+  // publish pump state
   if (inputStabilized && publishPumpState) {
     if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
       // pump is on

@@ -21,7 +21,7 @@
       WINC1501 Model B firmware version 19.6.1
     WiFiOTA version 1.0.2 by Arduino
     LiquidCrystal version 1.0.7 by Arduino
-    MQTT version 2.4.1 by Joel Gaehwiler
+    MQTT version 2.4.3 by Joel Gaehwiler
     OneWire version 2.3.4 by Paul Stoffregen and many others
     DallasTemperature version 3.8.0 by Miles Burton and others
   
@@ -456,12 +456,12 @@ void setup() {
   
   #ifdef ENABLE_WATCHDOG
   // set up the generic clock (GCLK2) used to clock the watchdog timer at 256Hz
-  REG_GCLK_GENDIV = GCLK_GENDIV_DIV(6) |              // Divide the 32.768kHz clock source by divisor 32
-                                                      //   where 2^(6 + 1): 32.768kHz/128=256Hz
+  REG_GCLK_GENDIV = GCLK_GENDIV_DIV(7) |              // Divide the 32.768kHz clock source by divisor 256
+                                                      //   where 2^(7 + 1): 32.768kHz/256=128Hz
                     GCLK_GENDIV_ID(2);                // Select Generic Clock (GCLK) 2
   while (GCLK->STATUS.bit.SYNCBUSY);                  // Wait for synchronization
 
-  REG_GCLK_GENCTRL = GCLK_GENCTRL_DIVSEL |            // Set to divide by 2^(GCLK_GENDIV_DIV(4) + 1)
+  REG_GCLK_GENCTRL = GCLK_GENCTRL_DIVSEL |            // Select clock divider
                      GCLK_GENCTRL_IDC |               // Set the duty cycle to 50/50 HIGH/LOW
                      GCLK_GENCTRL_GENEN |             // Enable GCLK2
                      GCLK_GENCTRL_SRC_OSCULP32K |     // Set the clock source to the ultra low power oscillator (OSCULP32K)
@@ -474,7 +474,7 @@ void setup() {
                      GCLK_CLKCTRL_ID_WDT;             // Feed the GCLK2 to the WDT
   while (GCLK->STATUS.bit.SYNCBUSY);                  // Wait for synchronization
 
-  REG_WDT_CONFIG = WDT_CONFIG_PER_16K;                // Set the WDT reset timeout to 16384 clock cycles or 64 seconds
+  REG_WDT_CONFIG = WDT_CONFIG_PER_16K;                // Set the WDT reset timeout to 16384 clock cycles @ 128Hz or 128 seconds
   while(WDT->STATUS.bit.SYNCBUSY);                    // Wait for synchronization
   REG_WDT_CTRL = WDT_CTRL_ENABLE;                     // Enable the WDT in normal mode
   while(WDT->STATUS.bit.SYNCBUSY);                    // Wait for synchronization
@@ -506,9 +506,6 @@ void loop() {
   char            tempStr[16];                        // temporary string
   uint8_t         inputReading;                       // last input read
   bool            inputStabilized = true;             // when true inputs are stabilized and are ready to be read
-  
-  // reset the watchdog every time loop() is called
-  //watchdogReset();
   
   // keep track of time appropriately
   WiFiRTC.loop();

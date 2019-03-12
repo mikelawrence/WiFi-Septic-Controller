@@ -37,7 +37,7 @@
 // Enable Low Power Mode on WiFi
 //#define ENABLE_WIFI_LOW_POWER
 // Current Version
-#define VERSION                   "0.4"
+#define VERSION                   "0.5"
 
 /******************************************************************
  * Application defines
@@ -60,7 +60,8 @@
 // temperature publish time in milliseconds when pump is off
 #define TEMP_PUBLISH_RATE         1*60*1000
 // NTP server used to update local time, can be IP Address or name
-#define NTP_SERVER                "time.nist.gov"
+#define NTP_SERVER                "ntp.home"
+//#define NTP_SERVER                "time.nist.gov"
 // timezone difference from GMT in hours (Standard Time difference)
 #define TZDIFF                    -6
 // Solid State Relay shutoff temperature in Celsius

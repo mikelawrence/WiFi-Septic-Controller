@@ -73,7 +73,7 @@ void RTCZero::begin(bool resetTime)
   tmp_reg |= RTC_MODE2_CTRL_PRESCALER_DIV1024; // set prescaler to 1024 for MODE2
   tmp_reg &= ~RTC_MODE2_CTRL_MATCHCLR; // disable clear on match
   
-  //According to the datasheet RTC_MODE2_CTRL_CLKREP = 0 for 24h
+  // According to the datasheet RTC_MODE2_CTRL_CLKREP = 0 for 24h
   tmp_reg &= ~RTC_MODE2_CTRL_CLKREP; // 24h time representation
 
   RTC->MODE2.READREQ.reg &= ~RTC_READREQ_RCONT; // disable continuously mode

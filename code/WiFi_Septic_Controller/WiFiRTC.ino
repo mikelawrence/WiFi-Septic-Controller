@@ -542,7 +542,6 @@ void WiFiRTCClass::sendNTPPacket() {
 
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:
-  IPAddress timeServer(129, 6, 15, 28);
   _udp.beginPacket(_timeServerName, NTP_OUTGOING_PORT);
   _udp.write(packetBuffer, NTP_PACKET_SIZE);
   _udp.endPacket();

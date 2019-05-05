@@ -4,3 +4,4 @@
 *.net
 *.kicad_pcb-bak
 code/WiFi_Septic_Controller/arduino_secrets.h
+fp-info-cache

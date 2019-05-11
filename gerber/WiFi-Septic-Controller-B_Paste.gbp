@@ -1,12 +1,12 @@
 G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,(5.1.2-1)-1*
-G04 #@! TF.CreationDate,2019-05-05T13:33:14-05:00*
+G04 #@! TF.CreationDate,2019-05-10T20:05:06-05:00*
 G04 #@! TF.ProjectId,WiFi-Septic-Controller,57694669-2d53-4657-9074-69632d436f6e,rev?*
 G04 #@! TF.SameCoordinates,Original*
 G04 #@! TF.FileFunction,Paste,Bot*
 G04 #@! TF.FilePolarity,Positive*
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW (5.1.2-1)-1) date 2019-05-05 13:33:14*
+G04 Created by KiCad (PCBNEW (5.1.2-1)-1) date 2019-05-10 20:05:06*
 %MOMM*%
 %LPD*%
 G04 APERTURE LIST*
@@ -14,7 +14,7 @@ G04 APERTURE LIST*
 %ADD11R,0.660000X1.760000*%
 %ADD12R,1.760000X0.660000*%
 %ADD13R,3.560000X3.560000*%
-%ADD14C,2.000000*%
+%ADD14C,0.152400*%
 %ADD15C,0.835000*%
 %ADD16C,0.735000*%
 %ADD17R,2.260000X1.360000*%

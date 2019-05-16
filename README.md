@@ -9,6 +9,8 @@ _Note: There is dangerous voltage present on this PCB. Use care when handling th
 
 _Note: The LMZ21700 Simple Switcher, SAMD21G18 ARM Processor, and ATWINC1500 WiFi Module have exposed pads on the bottom which requires either a reflow oven or hot air to solder properly._
 
+For Bill of Materials generation I use my version of [KiBoM](https://github.com/mikelawrence/KiBoM) forked from [SchrodingersGat](https://github.com/SchrodingersGat/KiBoM). 
+
 ## Status
 * Rev 1.1 PCB has been updated to support KiCad 5.1 libraries. Some footprints changed when libraries were updated but changes were minimal. This board has NOT been tested.
   * Order the PCB from [OSH Park](https://oshpark.com/shared_projects/a805S6zq).

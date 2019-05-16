@@ -454,7 +454,7 @@ ENDDEF
 #
 # Graphic_Logo_Open_Hardware_Small
 #
-DEF ~Graphic_Logo_Open_Hardware_Small #LOGO 0 40 Y Y 1 F N
+DEF Graphic_Logo_Open_Hardware_Small #LOGO 0 40 Y Y 1 F N
 F0 "#LOGO" 0 275 50 H I C CNN
 F1 "Graphic_Logo_Open_Hardware_Small" 0 -225 50 H I C CNN
 F2 "" 0 0 50 H I C CNN
@@ -505,7 +505,7 @@ ENDDEF
 #
 # MCU_Microchip_SAMD-ML_SAMD21G18-M
 #
-DEF ~MCU_Microchip_SAMD-ML_SAMD21G18-M U 0 40 Y Y 1 F N
+DEF MCU_Microchip_SAMD-ML_SAMD21G18-M U 0 40 Y Y 1 F N
 F0 "U" 750 1800 50 H V R CNN
 F1 "MCU_Microchip_SAMD-ML_SAMD21G18-M" 750 -1800 50 H I R CNN
 F2 "Housings_DFN_QFN:QFN-48-1EP_7x7mm_Pitch0.5mm" -1000 -1700 50 H I L CIN
@@ -892,6 +892,22 @@ X +12V 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
+# power_+3V3
+#
+DEF power_+3V3 #PWR 0 0 Y Y 1 F P
+F0 "#PWR" 0 -150 50 H I C CNN
+F1 "power_+3V3" 0 140 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+ALIAS +3.3V
+DRAW
+P 2 0 1 0 -30 50 0 100 N
+P 2 0 1 0 0 0 0 100 N
+P 2 0 1 0 0 100 30 50 N
+X +3V3 1 0 0 0 U 50 50 1 1 W N
+ENDDRAW
+ENDDEF
+#
 # power_+5V
 #
 DEF power_+5V #PWR 0 0 Y Y 1 F P
@@ -960,20 +976,6 @@ P 2 0 1 0 -30 50 0 100 N
 P 2 0 1 0 0 0 0 100 N
 P 2 0 1 0 0 100 30 50 N
 X VBUS 1 0 0 0 U 50 50 1 1 W N
-ENDDRAW
-ENDDEF
-#
-# power_VCC
-#
-DEF power_VCC #PWR 0 0 Y Y 1 F P
-F0 "#PWR" 0 -150 50 H I C CNN
-F1 "power_VCC" 0 150 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-DRAW
-C 0 75 25 0 1 0 N
-P 2 0 1 0 0 0 0 50 N
-X VCC 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #

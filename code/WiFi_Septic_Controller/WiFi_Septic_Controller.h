@@ -33,7 +33,7 @@
 // Enable OTA updates
 #define ENABLE_OTA_UPDATES
 // Enable Serial on USB
-//#define ENABLE_SERIAL
+#define ENABLE_SERIAL
 // Enable Low Power Mode on WiFi
 //#define ENABLE_WIFI_LOW_POWER
 // Current Version

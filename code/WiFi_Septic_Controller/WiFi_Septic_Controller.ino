@@ -13,13 +13,13 @@
   MQTT, a machine-to-machine (M2M)/"Internet of Things" connectivity 
   protocol, is the basis of communication with Home Assistant.
   
-  Built with Arduino IDE 1.8.8
+  Built with Arduino IDE 1.8.9
   
   The following libraries must be installed using Library Manager:
   
-    WiFi101 version 0.15.3 by Arduino
+    WiFi101 version 0.16.0 by Arduino
       WINC1501 Model B firmware version 19.6.1
-    WiFiOTA version 1.0.2 by Arduino
+    WiFi101OTA version 1.0.2 by Arduino
     LiquidCrystal version 1.0.7 by Arduino
     MQTT version 2.4.3 by Joel Gaehwiler
     OneWire version 2.3.4 by Paul Stoffregen and many others

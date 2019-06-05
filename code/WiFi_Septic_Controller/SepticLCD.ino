@@ -203,10 +203,10 @@ void SepticLCDClass::updateDisplay() {
 void SepticLCDClass::updateTime() {
   char timeStr[8];
   
-  WiFiRTC.getTimeHM(timeStr);  // get current time
-  strncpy(_row1, timeStr, 7);     // copy time to row string
+  WiFiRTC.getTimeHM(timeStr);   // get current time
+  strncpy(_row1, timeStr, 7);   // copy time to row string
   if (strlen(timeStr) < 7) {
-    _row1[6] = ' ';               // add a space to the end
+    _row1[6] = ' ';             // add a space to the end
   }
 }
 

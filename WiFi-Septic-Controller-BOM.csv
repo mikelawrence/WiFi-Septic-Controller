@@ -49,18 +49,3 @@ Quantity,References,Description,Manufacturer,Part Number,Vendor,Vendor Part Numb
 1,U6,"MODULE, SMD, WiFi, u.FL connector",Atmel,ATWINC1500-MR210UB1140,Mouser,579-C1500MR210UB1140
 1,U8,"IC, QFN44, MCU, ARM, 256kB Flash, 32kB SRAM, 48MHz",Atmel,ATSAMD21G18A-MUT,Mouser,556-ATSAMD21G18A-MUT
 1,Y1,"XTL, SMD, 32.768kHz",Abracon,ABS07-32.768KHZ-9-T,Mouser,815-ABS07-32.768K9T
-
-
-
-
-
-Component Groups:,50
-Component Count:,95
-Fitted Components:,95
-Number of PCBs:,1
-Total components:,95
-Schematic Version:,1.1
-Schematic Date:,May 2019
-BoM Date:,"Wednesday, May 15, 2019 at 09:08:21 PM"
-Schematic Source:,/Users/mike/Documents/KiCad/WiFi-Septic-Controller/WiFi-Septic-Controller.sch
-KiCad Version:,Eeschema (5.1.2-1)-1

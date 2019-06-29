@@ -1,5 +1,5 @@
 /*
-  Septic WiFi Controller Project wide defines
+  WiFi Septic Controller Project wide defines
 
   Copyright (c) 2019 Mike Lawrence
 
@@ -37,7 +37,7 @@
 // Enable Low Power Mode on WiFi
 //#define ENABLE_WIFI_LOW_POWER
 // Current Version
-#define VERSION                   "0.5"
+#define VERSION                   "0.6"
 
 /******************************************************************
  * Application defines
@@ -70,28 +70,38 @@
 /******************************************************************
  * Home Assistant MQTT Defines
  ******************************************************************/
-#define HASS_PREFIX               "hass"
+#define HASS_PREFIX               "homeassistant"
 #define HASS_NODE_NAME            "septic"
+
 // HASS defines below here should not be modified
+#define HASS_AVAIL_TOPIC          HASS_PREFIX "/sensor/" HASS_NODE_NAME "/avail"
+#define HASS_PAYLOAD_AVAIL        "online"
+#define HASS_PAYLOAD_NOT_AVAIL    "offline"
+
 #define HASS_TEMP_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/temperature/config"
 #define HASS_TEMP_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/temperature/state"
-#define HASS_TEMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Temperature\", \"state_topic\": \"" HASS_TEMP_STATE_TOPIC \
-                                  "\", \"unit_of_measurement\": \"\\u00b0C\" }"
+#define HASS_TEMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Temperature\", \"stat_t\": \"" HASS_TEMP_STATE_TOPIC \
+                                  "\", \"unit_of_meas\": \"°C\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
+                                  
 #define HASS_RSSI_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/rssi/config"
 #define HASS_RSSI_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/rssi/state"
-#define HASS_RSSI_CONFIG          "{ \"name\": \"" BOARD_NAME " RSSI\", \"state_topic\": \"" HASS_RSSI_STATE_TOPIC \
-                                  "\", \"unit_of_measurement\": \"dBm\" }"
+#define HASS_RSSI_CONFIG          "{ \"name\": \"" BOARD_NAME " RSSI\", \"stat_t\": \"" HASS_RSSI_STATE_TOPIC \
+                                  "\", \"unit_of_meas\": \"dBm\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
+                                  
 #define HASS_PUMP_CONFIG_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/pump/config"
 #define HASS_PUMP_STATE_TOPIC     HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/pump/state"
-#define HASS_PUMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Pump\", \"state_topic\": \"" HASS_PUMP_STATE_TOPIC "\" }"
+#define HASS_PUMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Pump\", \"stat_t\": \"" HASS_PUMP_STATE_TOPIC \
+                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
 
 #define HASS_ALARM_CONFIG_TOPIC   HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/config"
 #define HASS_ALARM_STATE_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/state"
-#define HASS_ALARM_CONFIG         "{ \"name\": \"" BOARD_NAME " Alarm\", \"state_topic\": \"" HASS_ALARM_STATE_TOPIC "\" }"
+#define HASS_ALARM_CONFIG         "{ \"name\": \"" BOARD_NAME " Alarm\", \"stat_t\": \"" HASS_ALARM_STATE_TOPIC \
+                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
 
 #define HASS_STATUS_CONFIG_TOPIC  HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/config"
 #define HASS_STATUS_STATE_TOPIC   HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/state"
-#define HASS_STATUS_CONFIG        "{ \"name\": \"" BOARD_NAME " Status\", \"state_topic\": \"" HASS_STATUS_STATE_TOPIC "\" }"
+#define HASS_STATUS_CONFIG        "{ \"name\": \"" BOARD_NAME " Status\", \"stat_t\": \"" HASS_STATUS_STATE_TOPIC \
+                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
 
 /******************************************************************
  * Board Defines
@@ -130,8 +140,6 @@
 #define ALARM_LED                 BOARD_LED
 // 1-Wire pin
 #define OWIRE                     2
-// pin number array for the eight inputs on this board (pins are D7, MISO, D1, D4, SCK, MOSI)
-const uint8_t input_pins[NUMBER_INPUTS] = {7, 10, 1, 4, 9, 8};
 
 // Logging/Printing defines
 #ifdef ENABLE_SERIAL

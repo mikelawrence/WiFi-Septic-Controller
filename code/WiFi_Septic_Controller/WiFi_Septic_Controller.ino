@@ -1,5 +1,5 @@
 /*
-  Septic WiFi Controller 
+  WiFi Septic Controller 
   
   This code acts as an Aerobic Septic Controller using a custom 
   SAMD/ATWINC1500C board. The board is compatible with an Arduino MKR1000.
@@ -83,6 +83,8 @@
 enum PumpStateEnum {PS_RESET, PS_TANK_EMPTY, PS_OVERTEMP, PS_OFF, PS_OFF_A, PS_MANUAL_ON, PS_MANUAL_ON_A, PS_AUTO_ON, PS_OVER_ON}; 
 // Enumeration for alarm state
 enum AlarmStateEnum {AS_RESET, AS_OFF, AS_OVERTEMP, AS_TANK_HIGH, AS_AIR_PUMP, AS_BLEACH_LEVEL};
+// pin number array for the eight inputs on this board (pins are D7, MISO, D1, D4, SCK, MOSI)
+const uint8_t input_pins[NUMBER_INPUTS] = {7, 10, 1, 4, 9, 8};
 
 /******************************************************************
  * Global Variables
@@ -200,7 +202,7 @@ void displayPumpState(bool force) {
 }
 
 /******************************************************************
- * Verify/ Make WiFi and MQTT connections
+ * Verify/Make WiFi and MQTT connections
  ******************************************************************/
 bool connect() {
   static uint8_t  lastMQTTRetryCount = 0;
@@ -307,6 +309,13 @@ bool connect() {
       ++lastMQTTRetryCount;
       lastMQTTRetryTime = millis();
       return false;
+    }
+    
+    // set Home Assistant Availibility Topic to available
+    if (!mqtt.publish(HASS_AVAIL_TOPIC, HASS_PAYLOAD_AVAIL, true, 1)) {
+      Logln("Failed to publish '" HASS_AVAIL_TOPIC "' MQTT topic");
+    } else {
+      Logln("Published '" HASS_AVAIL_TOPIC "' MQTT topic, '" HASS_PAYLOAD_AVAIL "' topic value");
     }
     
     // publish Home Assistant temperature config Topic
@@ -451,8 +460,9 @@ void setup() {
   WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
 
   // MQTT setup
+  mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);      // initialize mqtt object
   mqtt.setOptions(65, true, 1000);                    // keep Alive, Clean Session, Timeout
-  mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);
+  mqtt.setWill(HASS_AVAIL_TOPIC, HASS_PAYLOAD_NOT_AVAIL, true, 1); // Set MQTT Will to offline
   
   #ifdef ENABLE_WATCHDOG
   // set up the generic clock (GCLK2) used to clock the watchdog timer at 256Hz

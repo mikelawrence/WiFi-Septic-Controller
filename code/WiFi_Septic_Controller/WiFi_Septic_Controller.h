@@ -96,7 +96,7 @@
 #define HASS_ALARM_CONFIG_TOPIC   HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/config"
 #define HASS_ALARM_STATE_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/state"
 #define HASS_ALARM_CONFIG         "{ \"name\": \"" BOARD_NAME " Alarm\", \"stat_t\": \"" HASS_ALARM_STATE_TOPIC \
-                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
+                                  "\", \"dev_cla\": \"problem\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
 
 #define HASS_STATUS_CONFIG_TOPIC  HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/config"
 #define HASS_STATUS_STATE_TOPIC   HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/state"

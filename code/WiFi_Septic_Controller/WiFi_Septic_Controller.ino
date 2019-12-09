@@ -13,7 +13,7 @@
   MQTT, a machine-to-machine (M2M)/"Internet of Things" connectivity 
   protocol, is the basis of communication with Home Assistant.
   
-  Built with Arduino IDE 1.8.9
+  Built with Arduino IDE 1.8.10
   
   The following libraries must be installed using Library Manager:
   
@@ -22,7 +22,7 @@
     WiFi101OTA version 1.0.2 by Arduino
     LiquidCrystal version 1.0.7 by Arduino
     MQTT version 2.4.3 by Joel Gaehwiler
-    OneWire version 2.3.4 by Paul Stoffregen and many others
+    OneWire version 2.3.5 by Paul Stoffregen and many others
     DallasTemperature version 3.8.0 by Miles Burton and others
   
   Copyright (c) 2019 Mike Lawrence
@@ -530,7 +530,7 @@ void loop() {
   
   // debounce input
   for (int i = 0; i < NUMBER_INPUTS; i++) {
-    // get current inut debounce time
+    // get current input debounce time
     // read the current input state
     inputReading = digitalRead(input_pins[i]);
     // update last debounce time if the state has changed

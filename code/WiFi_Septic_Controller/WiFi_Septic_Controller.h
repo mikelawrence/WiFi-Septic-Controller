@@ -1,7 +1,7 @@
 /*
   WiFi Septic Controller Project wide defines
 
-  Copyright (c) 2019 Mike Lawrence
+  Copyright (c) 2021 Mike Lawrence
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@
 // Enable Low Power Mode on WiFi
 //#define ENABLE_WIFI_LOW_POWER
 // Current Version
-#define VERSION                   "0.6"
+#define VERSION                   "0.7"
 
 /******************************************************************
  * Application defines
@@ -78,30 +78,37 @@
 #define HASS_PAYLOAD_AVAIL        "online"
 #define HASS_PAYLOAD_NOT_AVAIL    "offline"
 
+#define HASS_DEVICE_CONFIG1       "\", \"dev\": {\"cns\": [[\"mac\", \""
+#define HASS_DEVICE_CONFIG2       "\"]], \"ids\": [\""
+#define HASS_DEVICE_CONFIG3       "\"], \"mf\": \"Mike Lawrence\", \"name\": \"" BOARD_NAME "\", " \
+                                  "\"sw\": \"" VERSION "\", \"mdl\": \"WiFi Septic Controller\"}}"
+
 #define HASS_TEMP_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/temperature/config"
 #define HASS_TEMP_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/temperature/state"
 #define HASS_TEMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Temperature\", \"stat_t\": \"" HASS_TEMP_STATE_TOPIC \
-                                  "\", \"unit_of_meas\": \"°C\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
-                                  
+                                  "\", \"dev_cla\": \"temperature\", \"unit_of_meas\": \"°C\", \"avty_t\": \"" \
+                                  HASS_AVAIL_TOPIC "\", \"uniq_id\": \"01"
+
 #define HASS_RSSI_CONFIG_TOPIC    HASS_PREFIX "/sensor/" HASS_NODE_NAME "/rssi/config"
 #define HASS_RSSI_STATE_TOPIC     HASS_PREFIX "/sensor/" HASS_NODE_NAME "/rssi/state"
 #define HASS_RSSI_CONFIG          "{ \"name\": \"" BOARD_NAME " RSSI\", \"stat_t\": \"" HASS_RSSI_STATE_TOPIC \
-                                  "\", \"unit_of_meas\": \"dBm\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
-                                  
+                                  "\", \"dev_cla\": \"signal_strength\", \"unit_of_meas\": \"dBm\", \"avty_t\": \"" \
+                                  HASS_AVAIL_TOPIC  "\", \"uniq_id\": \"02"
+
 #define HASS_PUMP_CONFIG_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/pump/config"
 #define HASS_PUMP_STATE_TOPIC     HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/pump/state"
 #define HASS_PUMP_CONFIG          "{ \"name\": \"" BOARD_NAME " Pump\", \"stat_t\": \"" HASS_PUMP_STATE_TOPIC \
-                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
+                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC  "\", \"uniq_id\": \"03"
 
 #define HASS_ALARM_CONFIG_TOPIC   HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/config"
 #define HASS_ALARM_STATE_TOPIC    HASS_PREFIX "/binary_sensor/" HASS_NODE_NAME "/alarm/state"
 #define HASS_ALARM_CONFIG         "{ \"name\": \"" BOARD_NAME " Alarm\", \"stat_t\": \"" HASS_ALARM_STATE_TOPIC \
-                                  "\", \"dev_cla\": \"problem\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
+                                  "\", \"dev_cla\": \"problem\", \"avty_t\": \"" HASS_AVAIL_TOPIC  "\", \"uniq_id\": \"04"
 
 #define HASS_STATUS_CONFIG_TOPIC  HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/config"
 #define HASS_STATUS_STATE_TOPIC   HASS_PREFIX "/sensor/" HASS_NODE_NAME "/status/state"
 #define HASS_STATUS_CONFIG        "{ \"name\": \"" BOARD_NAME " Status\", \"stat_t\": \"" HASS_STATUS_STATE_TOPIC \
-                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC "\" }"
+                                  "\", \"avty_t\": \"" HASS_AVAIL_TOPIC  "\", \"uniq_id\": \"05"
 
 /******************************************************************
  * Board Defines

@@ -1,5 +1,5 @@
 /*
-  WiFi Septic Controller 
+  WiFi Septic Controller
   
   This code acts as an Aerobic Septic Controller using a custom 
   SAMD/ATWINC1500C board. The board is compatible with an Arduino MKR1000.
@@ -13,19 +13,19 @@
   MQTT, a machine-to-machine (M2M)/"Internet of Things" connectivity 
   protocol, is the basis of communication with Home Assistant.
   
-  Built with Arduino IDE 1.8.10
+  Built with Arduino IDE 1.8.13
   
   The following libraries must be installed using Library Manager:
   
-    WiFi101 version 0.16.0 by Arduino
+    WiFi101 version 0.16.1 by Arduino
       WINC1501 Model B firmware version 19.6.1
     WiFi101OTA version 1.0.2 by Arduino
     LiquidCrystal version 1.0.7 by Arduino
-    MQTT version 2.4.3 by Joel Gaehwiler
+    MQTT version 2.5.0 by Joel Gaehwiler
     OneWire version 2.3.5 by Paul Stoffregen and many others
-    DallasTemperature version 3.8.0 by Miles Burton and others
+    DallasTemperature version 3.9.0 by Miles Burton and others
   
-  Copyright (c) 2019 Mike Lawrence
+  Copyright (c) 2021 Mike Lawrence
   
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -90,25 +90,31 @@ const uint8_t input_pins[NUMBER_INPUTS] = {7, 10, 1, 4, 9, 8};
  * Global Variables
  ******************************************************************/
 // network
-WiFiClient      net;
+WiFiClient     net;
 // MQTT CLient
-MQTTClient      mqtt(1024);
+MQTTClient     mqtt(1024);
+// MAC Address formatted as a string with ':' separators
+char           macStr[17] = "";
+// Unique ID formatted as a string
+char           uniqueIdStr[33] = "";
+// device string at the end of the config topics, must be runtime
+String         deviceStr;
 // current input state, arranged in array by input_pins
-int8_t          inputState[NUMBER_INPUTS] = {-1, -1, -1, -1, -1, -1};
+int8_t         inputState[NUMBER_INPUTS] = {-1, -1, -1, -1, -1, -1};
 // when true a hardware reset just occurred
-bool            resetOccurred = true;
+bool           resetOccurred = true;
 // when true WiFi was recently disconnected from the network
-bool            wifiDisconnectOccurred = true;
+bool           wifiDisconnectOccurred = true;
 // when true WiFi was recently connected to the network
-bool            wifiConnectOccurred = false;
+bool           wifiConnectOccurred = false;
 // current state for Pump State machine
-PumpStateEnum   curPumpState = PS_RESET;
+PumpStateEnum  curPumpState = PS_RESET;
 // last state for Pump State machine
-PumpStateEnum   lastPumpState = PS_RESET;
+PumpStateEnum  lastPumpState = PS_RESET;
 // current state for alarm state machine
-AlarmStateEnum  curAlarmState = AS_RESET;
+AlarmStateEnum curAlarmState = AS_RESET;
 // last state for Alarm State machine
-AlarmStateEnum  lastAlarmState = AS_RESET;
+AlarmStateEnum lastAlarmState = AS_RESET;
 
 /******************************************************************
  * Reset the watchdog timer
@@ -208,8 +214,6 @@ bool connect() {
   static uint8_t  lastMQTTRetryCount = 0;
   static uint32_t lastMQTTRetryTime = millis() - 10*1000;
   static uint32_t lastDisconnectTime;
-  byte            mac[6];
-  IPAddress       ip;
   int32_t         status = WiFi.status();
 
   // Reset the watchdog every time connect() is called
@@ -250,23 +254,27 @@ bool connect() {
     WiFi.lowPowerMode();
     Println("  Low Power Mode enabled");
     #endif
-    
-    #ifdef ENABLE_SERIAL
-    // display MAC Address
-    WiFi.macAddress(mac);
-    Print("  MAC Address: ");
-    for (int i = 5; i != 0; i--) {
-      if (mac[i] < 16) Print("0");
-      Print(mac[i], HEX);
-      Print(":");
+ 
+    if (macStr[0] == 0) {
+      // MAC address not currently defined, grab the MAC address
+      // MAC address is only valid when WiFi is connected
+      byte mac[6];
+      
+      WiFi.macAddress(mac);
+      sprintf(macStr, "%02x:%02x:%02x:%02x:%02x:%02x",
+              mac[5], mac[4], mac[3], mac[2], mac[1], mac[0]);
+      // create device string
+      deviceStr = String(String(uniqueIdStr) + HASS_DEVICE_CONFIG1 +
+                         String(macStr) + HASS_DEVICE_CONFIG2 +
+                         String(uniqueIdStr) + HASS_DEVICE_CONFIG3);
     }
-    if (mac[0] < 16) Print("0");
-    Println(mac[0], HEX);
-    
-    // Display IP Address
-    ip = WiFi.localIP();
+                       
+    Print("  MAC Address: ");
+    Println(macStr);
+   
+    #ifdef ENABLE_SERIAL
     Print("  IP Address: ");
-    Println(ip);
+    Println(WiFi.localIP());
     #endif
     
     #ifdef ENABLE_OTA_UPDATES
@@ -311,69 +319,94 @@ bool connect() {
       return false;
     }
     
-    // set Home Assistant Availibility Topic to available
+    // set Home Assistant Availibility topic to available
     if (!mqtt.publish(HASS_AVAIL_TOPIC, HASS_PAYLOAD_AVAIL, true, 1)) {
-      Logln("Failed to publish '" HASS_AVAIL_TOPIC "' MQTT topic");
+      Logln("Failed to publish MQTT topic'" HASS_AVAIL_TOPIC "', value '" HASS_PAYLOAD_AVAIL "'");
     } else {
-      Logln("Published '" HASS_AVAIL_TOPIC "' MQTT topic, '" HASS_PAYLOAD_AVAIL "' topic value");
+      Logln("Published MQTT topic '" HASS_AVAIL_TOPIC "', value '" HASS_PAYLOAD_AVAIL "'");
     }
     
-    // publish Home Assistant temperature config Topic
-    if (!mqtt.publish(HASS_TEMP_CONFIG_TOPIC, HASS_TEMP_CONFIG, true, 1)) {
-      Logln("Failed to publish '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic");
+    // publish Home Assistant Temperature Config topic
+    String configStr = String(HASS_TEMP_CONFIG + deviceStr);
+    if (!mqtt.publish(HASS_TEMP_CONFIG_TOPIC, configStr, true, 1)) {
+      Log("Failed to publish MQTT topic'" HASS_TEMP_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     } else {
-      Logln("Published '" HASS_TEMP_CONFIG_TOPIC "' MQTT topic, '" HASS_TEMP_CONFIG "' topic value");
+      Log("Published MQTT topic '" HASS_TEMP_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     }
     
     // publish Home Assistant RSSI config topic
-    if (!mqtt.publish(HASS_RSSI_CONFIG_TOPIC, HASS_RSSI_CONFIG, true, 1)) {
-      Logln("Failed to publish '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic");
+    configStr = String(HASS_RSSI_CONFIG + deviceStr);
+    if (!mqtt.publish(HASS_RSSI_CONFIG_TOPIC, configStr, true, 1)) {
+      Log("Failed to publish MQTT topic'" HASS_RSSI_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     } else {
-      Logln("Published '" HASS_RSSI_CONFIG_TOPIC "' MQTT topic, '" HASS_RSSI_CONFIG "' topic value");
+      Log("Published MQTT topic '" HASS_RSSI_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     }
     
     // publish Home Assistant pump config topic
-    if (!mqtt.publish(HASS_PUMP_CONFIG_TOPIC, HASS_PUMP_CONFIG, true, 1)) {
-      Logln("Failed to publish '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic");
+    configStr = String(HASS_PUMP_CONFIG + deviceStr);
+    if (!mqtt.publish(HASS_PUMP_CONFIG_TOPIC, configStr, true, 1)) {
+      Log("Failed to publish MQTT topic'" HASS_PUMP_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     } else {
-      Logln("Published '" HASS_PUMP_CONFIG_TOPIC "' MQTT topic, '" HASS_PUMP_CONFIG "' topic value");
+      Log("Published MQTT topic '" HASS_PUMP_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     }
     
     // publish Home Assistant alarm config topic
-    if (!mqtt.publish(HASS_ALARM_CONFIG_TOPIC, HASS_ALARM_CONFIG, true, 1)) {
-      Logln("Failed to publish '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic");
+    configStr = String(HASS_ALARM_CONFIG + deviceStr);
+    if (!mqtt.publish(HASS_ALARM_CONFIG_TOPIC, configStr, true, 1)) {
+      Log("Failed to publish MQTT topic'" HASS_ALARM_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     } else {
-      Logln("Published '" HASS_ALARM_CONFIG_TOPIC "' MQTT topic, '" HASS_ALARM_CONFIG "' topic value");
+      Log("Published MQTT topic '" HASS_ALARM_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     }
     
     // publish Home Assistant pump status config topic
-    if (!mqtt.publish(HASS_STATUS_CONFIG_TOPIC, HASS_STATUS_CONFIG, true, 1)) {
-      Logln("Failed to publish '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic");
+    configStr = String(HASS_STATUS_CONFIG + deviceStr);
+    if (!mqtt.publish(HASS_STATUS_CONFIG_TOPIC, configStr, true, 1)) {
+      Log("Failed to publish MQTT topic'" HASS_STATUS_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     } else {
-      Logln("Published '" HASS_STATUS_CONFIG_TOPIC "' MQTT topic, '" HASS_STATUS_CONFIG "' topic value");
+      Log("Published MQTT topic '" HASS_STATUS_CONFIG_TOPIC "', value '");
+      Print(configStr);
+      Println("'");
     }
     
     if (resetOccurred) {                              // Hardware reset occurred
       // reset just recently occurred
       if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset Hardware", true, 1)) {
-        Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset Hardware' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Reset Hardware'");
       } else {
-        Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset Hardware' topic value");
+        Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Reset Hardware'");
       }
     } else if (wifiConnectOccurred) {                 // WiFi Connected
       // Wifi just connected
       if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset WiFi Connect", true, 1)) {
-        Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Reset WiFi Connect'");
       } else {
-        Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset WiFi Connect' topic value");
+        Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Reset WiFi Connect'");
       }
 /*    } else {
       // MQTT just connected
       if (!mqtt.publish(HASS_STATUS_STATE_TOPIC, "Reset MQTT Connect", true, 1)) {
         // since no reset or WiFi connect occurred then it was a MQTT Connect
-        Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'ResetMQTT Connect' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'ResetMQTT Connect'");
       } else {
-        Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Reset MQTT Connect' topic value");
+        Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Reset MQTT Connect'");
       }*/
     }
     
@@ -427,7 +460,16 @@ void setup() {
   // announce who we are and software
   Println("\nWiFi Septic Controller: " BOARD_NAME);
   Println("  Software Version: " VERSION);
-  
+
+  // grab token from SAMD21 serial number
+  sprintf(uniqueIdStr, "%08x%08x%08x%08x",
+         *(volatile uint32_t *) 0x0080A00C,
+         *(volatile uint32_t *) 0x0080A040,
+         *(volatile uint32_t *) 0x0080A044,
+         *(volatile uint32_t *) 0x0080A048);
+  Print("  Unique ID: ");
+  Println(uniqueIdStr);
+
   // configuration based on board type
   #if   defined(ARDUINO_SAMD_FEATHER_M0)
   // Adafruit Feather M0 WINC1500 is sometimes used for testing
@@ -461,7 +503,8 @@ void setup() {
 
   // MQTT setup
   mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);      // initialize mqtt object
-  mqtt.setOptions(65, true, 1000);                    // keep Alive, Clean Session, Timeout
+  mqtt.setKeepAlive(10);                             // mqtt keep alive interval in seconds
+//  mqtt.setOptions(65, true, 1000);                    // keep Alive, Clean Session, Timeout
   mqtt.setWill(HASS_AVAIL_TOPIC, HASS_PAYLOAD_NOT_AVAIL, true, 1); // Set MQTT Will to offline
   
   #ifdef ENABLE_WATCHDOG
@@ -994,18 +1037,18 @@ void loop() {
     if (inputState[EFFLUENT_PUMP_SENSE] == SENSE_ACTIVE) {
       // pump is on
       if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "ON", true, 1)) {
-        Logln("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+        Logln("Published MQTT topic '" HASS_PUMP_STATE_TOPIC "', value 'ON'");
         publishPumpState = false;
       } else {
-        Logln("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_PUMP_STATE_TOPIC "', value 'ON'");
       }
     } else {
       // pump is off
       if (mqtt.publish(HASS_PUMP_STATE_TOPIC, "OFF", true, 1)) {
-        Logln("Published '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+        Logln("Published MQTT topic '" HASS_PUMP_STATE_TOPIC "', value 'OFF'");
         publishPumpState = false;
       } else {
-        Logln("Failed to publish '" HASS_PUMP_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_PUMP_STATE_TOPIC "', value 'OFF'");
       }
     }
   }
@@ -1017,34 +1060,34 @@ void loop() {
       switch (curAlarmState) {
         case AS_OVERTEMP:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Overtemp Alarm On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Overtemp Alarm On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Overtemp Alarm On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Overtemp Alarm On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Overtemp Alarm On'");
           }
           break;
         case AS_TANK_HIGH:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Tank High Alarm On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank High Alarm On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Tank High Alarm On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank High Alarm On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Tank High Alarm On'");
           }
           break;
         case AS_AIR_PUMP:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Air Pump Alarm On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Air Pump Alarm On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Air Pump Alarm On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Air Pump Alarm On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Air Pump Alarm On'");
           }
           break;
         case AS_BLEACH_LEVEL:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Bleach Alarm On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Bleach Alarm On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Bleach Alarm On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Bleach Alarm On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Bleach Alarm On'");
           }
           break;
         default:
@@ -1057,43 +1100,43 @@ void loop() {
         case PS_OFF:
         case PS_OFF_A:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Idle", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Idle' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Idle'");
             publishSepticStatus = false;
           } else {  
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Idle' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Idle'");
           }
           break;
         case PS_TANK_EMPTY:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Tank Empty", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank Empty' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Tank Empty'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Tank Empty' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Tank Empty'");
           }
           break;
         case PS_MANUAL_ON:
         case PS_MANUAL_ON_A:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Manual Pump On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Manual Pump On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Manual Pump On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Manual Pump On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Manual Pump On'");
           }
           break;
         case PS_AUTO_ON:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Auto Pump On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Auto Pump On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Auto Pump On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Auto Pump On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Auto Pump On'");
           }
           break;
         case PS_OVER_ON:
           if (mqtt.publish(HASS_STATUS_STATE_TOPIC, "Override Pump On", true, 1)) {
-            Logln("Published '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Override Pump On' topic value");
+            Logln("Published MQTT topic '" HASS_STATUS_STATE_TOPIC "', value 'Override Pump On'");
             publishSepticStatus = false;
           } else {
-            Logln("Failed to publish '" HASS_STATUS_STATE_TOPIC "' MQTT topic, 'Override Pump On' topic value");
+            Logln("Failed to publish MQTT topic'" HASS_STATUS_STATE_TOPIC "', value 'Override Pump On'");
           }
           break;
         default:
@@ -1109,18 +1152,18 @@ void loop() {
     if (curAlarmState == AS_OFF) {
       // alarm is currently off
       if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "OFF", true, 1)) {
-        Logln("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+        Logln("Published MQTT topic '" HASS_ALARM_STATE_TOPIC "', value 'OFF'");
         publishAlarmState = false;
       } else {
-        Logln("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'OFF' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_ALARM_STATE_TOPIC "', value 'OFF'");
       }
     } else {
       // alarm is currently on
       if (mqtt.publish(HASS_ALARM_STATE_TOPIC, "ON", true, 1)) {
-        Logln("Published '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+        Logln("Published MQTT topic '" HASS_ALARM_STATE_TOPIC "', value 'ON'");
         publishAlarmState = false;
       } else {
-        Logln("Failed to publish '" HASS_ALARM_STATE_TOPIC "' MQTT topic, 'ON' topic value");
+        Logln("Failed to publish MQTT topic'" HASS_ALARM_STATE_TOPIC "', value 'ON'");
       }
     }
   }
@@ -1134,25 +1177,25 @@ void loop() {
       dtostrf(temperature, 1, 1, tempStr);            // convert temperature to string
       // publish the most recent temperture
       if (mqtt.publish(HASS_TEMP_STATE_TOPIC, tempStr, false, 1)) {
-        /*Log("Published '" HASS_TEMP_STATE_TOPIC "' MQTT topic, '");
+        /*Log("Published MQTT topic '" HASS_TEMP_STATE_TOPIC "', value '");
         Print(tempStr);
-        Println("' topic value");*/
+        Println("'");*/
       } else {
-        Log("Failed to publish '" HASS_TEMP_STATE_TOPIC "' MQTT topic, '");
+        Log("Failed to publish MQTT topic'" HASS_TEMP_STATE_TOPIC "', value '");
         Print(tempStr);
-        Println("' topic value");
+        Println("'");
       }
     }
     itoa(WiFi.RSSI(), tempStr, 10);
     // publish the RSSI too
     if (mqtt.publish(HASS_RSSI_STATE_TOPIC, tempStr, false, 1)) {
-      /*Log("Published '" HASS_RSSI_STATE_TOPIC "' MQTT topic, '");
+      /*Log("Published MQTT topic '" HASS_RSSI_STATE_TOPIC "', value '");
       Print(tempStr);
-      Println("' topic value");*/
+      Println("'");*/
     } else {
-      Log("Failed to publish '" HASS_RSSI_STATE_TOPIC "' MQTT topic, '");
+      Log("Failed to publish MQTT topic'" HASS_RSSI_STATE_TOPIC "', value '");
       Print(tempStr);
-      Println("' topic value");
+      Println("'");
     }
     nextTempPublish += TEMP_PUBLISH_RATE;             // prepare for next publish time
     if (nextTempPublish < millis()) {

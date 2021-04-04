@@ -503,8 +503,9 @@ void setup() {
 
   // MQTT setup
   mqtt.begin(MQTT_SERVER, MQTT_SERVERPORT, net);      // initialize mqtt object
-  mqtt.setKeepAlive(10);                             // mqtt keep alive interval in seconds
-//  mqtt.setOptions(65, true, 1000);                    // keep Alive, Clean Session, Timeout
+  mqtt.setKeepAlive(600);                             // set Keep Alive to 10 minutes
+  mqtt.setCleanSession(true);                         // set Clean Session on
+  mqtt.setTimeout(5000);                              // set Timeout to 5 seconds
   mqtt.setWill(HASS_AVAIL_TOPIC, HASS_PAYLOAD_NOT_AVAIL, true, 1); // Set MQTT Will to offline
   
   #ifdef ENABLE_WATCHDOG

@@ -3,7 +3,7 @@ I had some problems with my newly installed aerobic septic system when hurricane
 
 This PCB design uses my custom libraries available here [Mike's KiCad Libraries](https://github.com/mikelawrence/KiCad-Libraries).
 
-This PCB was designed with [KiCad 5.1.2](http://kicad-pcb.org).
+This PCB was designed with [KiCad 5.1.2](http://kicad.org).
 
 _Note: There is dangerous voltage present on this PCB. Use care when handling this board. Housing this board in a box is required to protect users from electrocution._
 
